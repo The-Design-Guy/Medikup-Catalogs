@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MEDIKUP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&amp;family=Assistant:wght@400;500;600;700;800&amp;family=Rubik:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#F2F3F5;font-family:Heebo,system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#1D2327}
+a{color:#006197;text-decoration:none}
+a:hover{color:#00AEA9}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid #00AEA9;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+<sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
+  <div style="position:sticky;top:0;z-index:50;height:56px;box-sizing:border-box;scrollbar-width:none;display:flex;align-items:center;gap:10px;padding:8px 16px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;white-space:nowrap;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid #E3E6E9">
+    <div style="display:flex;align-items:center;gap:10px;flex:0 0 auto">
+      <img src="assets/medikup-logo.svg" alt="MEDIKUP" style="height:20px;width:auto;display:block;flex:0 0 auto">
+      <sc-if value="{{ wideBar }}" hint-placeholder-val="{{ true }}"><span style="font:500 13px Heebo;color:#5B6770;white-space:nowrap">Theme Editor</span></sc-if>
+    </div>
+    <span style="display:inline-flex;align-items:center;gap:6px;font:500 12px Heebo;padding:4px 10px;border-radius:999px;background:{{ status.bg }};color:{{ status.fg }};white-space:nowrap;flex:0 0 auto" title="{{ status.label }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ status.dot }}"></span>{{ status.short }}</span>
+    <div style="flex:1"></div>
+    <div style="display:inline-flex;gap:2px;padding:2px;background:#ECEEF0;border-radius:9px">
+      <sc-for list="{{ deviceOpts }}" as="o" hint-placeholder-count="3">
+        <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="white-space:nowrap;flex:0 0 auto;border:0;padding:6px 12px;border-radius:7px;font:500 13px Heebo;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <div style="display:inline-flex;gap:2px;padding:2px;background:#ECEEF0;border-radius:9px">
+      <sc-for list="{{ viewOpts }}" as="o" hint-placeholder-count="2">
+        <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="white-space:nowrap;flex:0 0 auto;border:0;padding:6px 12px;border-radius:7px;font:500 13px Heebo;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <div dir="ltr" title="Site language" style="display:inline-flex;gap:2px;padding:2px;background:#ECEEF0;border-radius:9px;flex:0 0 auto">
+      <sc-for list="{{ barLang }}" as="o" hint-placeholder-count="2">
+        <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="white-space:nowrap;border:0;padding:6px 10px;border-radius:7px;font:600 13px Heebo;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <div title="Units" style="display:inline-flex;gap:2px;padding:2px;background:#ECEEF0;border-radius:9px;flex:0 0 auto">
+      <sc-for list="{{ barUnit }}" as="o" hint-placeholder-count="2">
+        <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="white-space:nowrap;border:0;padding:6px 10px;border-radius:7px;font:500 13px Heebo;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <button onClick="{{ toggleGrid }}" aria-pressed="{{ gridOn }}" style="white-space:nowrap;flex:0 0 auto;border:1px solid {{ gridBtn.bd }};background:{{ gridBtn.bg }};color:{{ gridBtn.fg }};padding:6px 12px;border-radius:8px;font:500 13px Heebo">{{ gridBtn.label }}</button>
+    <div style="width:1px;height:24px;background:#E3E6E9"></div>
+    <button onClick="{{ undo }}" disabled="{{ cantUndo }}" style="white-space:nowrap;flex:0 0 auto;border:1px solid #E3E6E9;background:#fff;color:#1D2327;padding:6px 12px;border-radius:8px;font:500 13px Heebo;opacity:{{ undoOp }}">Undo</button>
+    <button onClick="{{ revert }}" disabled="{{ notDirty }}" style="white-space:nowrap;flex:0 0 auto;border:1px solid #E3E6E9;background:#fff;color:#1D2327;padding:6px 12px;border-radius:8px;font:500 13px Heebo;opacity:{{ revertOp }}">Discard draft</button>
+    <button onClick="{{ publish }}" disabled="{{ notDirty }}" style="white-space:nowrap;flex:0 0 auto;border:0;background:#1D2327;color:#fff;padding:7px 16px;border-radius:8px;font:600 13px Heebo;opacity:{{ revertOp }}">Publish</button>
+    <button onClick="{{ openSite }}" title="Opens the published site in a new tab" style="white-space:nowrap;flex:0 0 auto;border:0;background:transparent;color:#006197;padding:6px 4px;font:500 13px Heebo;white-space:nowrap">Open published site ↗</button>
+  </div>
+</sc-if>
+
+<div style="flex:1;display:flex;min-height:0">
+
+<sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:312px;flex:0 0 312px;background:#fff;border-right:1px solid #E3E6E9;height:calc(100vh - 56px);position:sticky;top:56px;display:flex;flex-direction:column">
+    <div style="display:flex;gap:4px;padding:12px 12px 0">
+      <sc-for list="{{ tabOpts }}" as="o" hint-placeholder-count="3">
+        <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="white-space:nowrap;flex:0 0 auto;flex:1;border:0;padding:9px 0;border-radius:8px;font:600 13px Heebo;background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button>
+      </sc-for>
+    </div>
+    <div style="flex:1;overflow:auto;padding:16px 16px 32px;display:flex;flex-direction:column;gap:22px">
+
+      <sc-if value="{{ tabTheme }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Scope</div>
+          <div style="display:flex;gap:2px;padding:2px;background:#ECEEF0;border-radius:9px">
+            <sc-for list="{{ scopeOpts }}" as="o" hint-placeholder-count="3">
+              <button onClick="{{ o.go }}" style="white-space:nowrap;flex:0 0 auto;flex:1;border:0;padding:6px 0;border-radius:7px;font:500 12px Heebo;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}">{{ o.label }}</button>
+            </sc-for>
+          </div>
+          <div style="font:400 12px/1.45 Heebo;color:#5B6770">{{ scopeNote }}</div>
+        </div>
+
+        <sc-if value="{{ hasWarnings }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:10px;background:#FFF6E5;border:1px solid #F3D9A4">
+            <div style="font:600 12px Heebo;color:#7A4B00">Contrast warnings</div>
+            <sc-for list="{{ warnings }}" as="w" hint-placeholder-count="1">
+              <div style="font:400 12px/1.45 Heebo;color:#7A4B00">{{ w.text }}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Presets</div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+            <sc-for list="{{ presets }}" as="p" hint-placeholder-count="3">
+              <button onClick="{{ p.go }}" style="border:1px solid #E3E6E9;background:#fff;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+                <span style="display:flex;gap:3px"><span style="width:14px;height:14px;border-radius:4px;background:{{ p.a }}"></span><span style="width:14px;height:14px;border-radius:4px;background:{{ p.b }}"></span><span style="width:14px;height:14px;border-radius:4px;background:{{ p.c }};border:1px solid #E3E6E9"></span></span>
+                <span style="font:500 11px Heebo;color:#1D2327">{{ p.name }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Colors</div>
+          <sc-for list="{{ colorRows }}" as="c" hint-placeholder-count="7">
+            <label style="display:flex;align-items:center;gap:10px;padding:4px 0">
+              <input type="color" value="{{ c.value }}" onChange="{{ c.set }}" aria-label="{{ c.label }}" style="width:30px;height:30px;border:1px solid #E3E6E9;border-radius:8px;padding:0;background:none;flex:0 0 30px">
+              <span style="flex:1;font:500 13px Heebo;color:#1D2327">{{ c.label }}</span>
+              <span style="font:500 12px Heebo;color:#5B6770;font-variant-numeric:tabular-nums">{{ c.value }}</span>
+              <sc-if value="{{ c.over }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ c.clear }}" title="Remove override" style="border:0;background:#E6F6F5;color:#006197;font:600 10px Heebo;padding:3px 6px;border-radius:5px">OVERRIDE ×</button>
+              </sc-if>
+            </label>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Typography</div>
+          <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;font:500 13px Heebo">Font family
+            <select value="{{ fontVal }}" onChange="{{ setFont }}" style="font:500 13px Heebo;padding:6px 8px;border:1px solid #E3E6E9;border-radius:8px;background:#fff">
+              <sc-for list="{{ fontOpts }}" as="f" hint-placeholder-count="3"><option value="{{ f }}">{{ f }}</option></sc-for>
+            </select>
+          </label>
+          <sc-for list="{{ weightRows }}" as="w" hint-placeholder-count="3">
+            <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;font:500 13px Heebo">{{ w.label }}
+              <select value="{{ w.value }}" onChange="{{ w.set }}" style="font:500 13px Heebo;padding:6px 8px;border:1px solid #E3E6E9;border-radius:8px;background:#fff">
+                <sc-for list="{{ w.opts }}" as="v" hint-placeholder-count="4"><option value="{{ v }}">{{ v }}</option></sc-for>
+              </select>
+            </label>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Shape &amp; spacing</div>
+          <label style="display:flex;flex-direction:column;gap:6px;font:500 13px Heebo">
+            <span style="display:flex;justify-content:space-between">Corner radius<span style="color:#5B6770;font-variant-numeric:tabular-nums">{{ radiusLabel }}</span></span>
+            <input type="range" min="0" max="28" step="1" value="{{ radiusVal }}" onChange="{{ setRadius }}" style="width:100%;accent-color:#006197">
+          </label>
+          <sc-for list="{{ shapeRows }}" as="r" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <span style="font:500 13px Heebo">{{ r.label }}</span>
+              <div style="display:flex;gap:2px;padding:2px;background:#ECEEF0;border-radius:9px">
+                <sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="3">
+                  <button onClick="{{ o.go }}" style="white-space:nowrap;flex:0 0 auto;flex:1;border:0;padding:6px 0;border-radius:7px;font:500 12px Heebo;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}">{{ o.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+          <div style="font:400 12px/1.45 Heebo;color:#5B6770">Section spacing scales inside the portfolio grid; columns, gutters and margins stay locked.</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Theme file</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button onClick="{{ exportTheme }}" style="border:1px solid #E3E6E9;background:#fff;padding:7px 12px;border-radius:8px;font:500 13px Heebo">Export JSON</button>
+            <button onClick="{{ openImport }}" style="border:1px solid #E3E6E9;background:#fff;padding:7px 12px;border-radius:8px;font:500 13px Heebo">Import</button>
+            <button onClick="{{ resetDefault }}" style="border:1px solid #E3E6E9;background:#fff;padding:7px 12px;border-radius:8px;font:500 13px Heebo;color:#B42318">Reset to default</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ tabPages }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Go to page</div>
+          <sc-for list="{{ routeRows }}" as="r" hint-placeholder-count="6">
+            <button onClick="{{ r.go }}" style="display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;background:{{ r.bg }};padding:8px 10px;border-radius:8px;font:500 13px Heebo;color:#1D2327;text-align:left">
+              <span>{{ r.label }}</span>
+              <span style="font:500 11px Heebo;color:{{ r.stFg }}">{{ r.state }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <sc-for list="{{ flagGroups }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">{{ g.name }}</div>
+            <sc-for list="{{ g.rows }}" as="f" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;gap:8px;font:500 13px Heebo">{{ f.label }}<span style="font:400 11px Heebo;color:#5B6770">{{ f.note }}</span></div>
+                <div style="display:flex;gap:2px;padding:2px;background:#ECEEF0;border-radius:9px;opacity:{{ f.op }}">
+                  <sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="3">
+                    <button onClick="{{ o.go }}" disabled="{{ o.dis }}" style="white-space:nowrap;flex:0 0 auto;flex:1;border:0;padding:5px 0;border-radius:7px;font:500 12px Heebo;background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }}">{{ o.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+        <div style="font:400 12px/1.5 Heebo;color:#5B6770;padding:12px;border-radius:10px;background:#F4F6F7">Simulation. Private = visible only in “Admin preview”. Off = removed from nav and direct routes return “not available”. Production must enforce this on the server.</div>
+      </sc-if>
+
+      <sc-if value="{{ tabData }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Tilt Bins (רב תא) · source sheet</div>
+          <div style="border:1px solid #E3E6E9;border-radius:10px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:1fr 1.2fr .7fr .7fr .7fr .9fr .6fr;gap:4px;padding:7px 10px;background:#F4F6F7;font:600 11px Heebo;color:#5B6770"><span>Size</span><span>SKU</span><span>W</span><span>H</span><span>D</span><span>mL</span><span>kg</span></div>
+            <sc-for list="{{ dataRows }}" as="r" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:1fr 1.2fr .7fr .7fr .7fr .9fr .6fr;gap:4px;padding:7px 10px;border-top:1px solid #EEF0F2;font:400 11px Heebo;font-variant-numeric:tabular-nums"><span>{{ r.name }}</span><span>{{ r.sku }}</span><span>{{ r.w }}</span><span>{{ r.h }}</span><span>{{ r.d }}</span><span>{{ r.ml }}</span><span>{{ r.kg }}</span></div>
+            </sc-for>
+          </div>
+          <div style="font:400 12px/1.45 Heebo;color:#5B6770">cm / mL / kg, exactly as in the legacy G1 brochure (רב תא דור 1, p.2). Model 9 load wording awaits product-owner approval.</div>
+        </div>
+        
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;font:500 13px Heebo">Attach sample files (demo)
+          <input type="checkbox" checked="{{ sampleFiles }}" onChange="{{ toggleSample }}" style="width:18px;height:18px;accent-color:#006197">
+        </label>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font:600 11px Heebo;letter-spacing:.08em;text-transform:uppercase;color:#5B6770">Project hotspots</div>
+          <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;font:500 13px Heebo">Linked product
+            <select value="{{ hsProduct }}" onChange="{{ setHsProduct }}" style="font:500 12px Heebo;padding:6px 8px;border:1px solid #E3E6E9;border-radius:8px;background:#fff;max-width:160px">
+              <sc-for list="{{ hsProductOpts }}" as="p" hint-placeholder-count="6"><option value="{{ p.id }}">{{ p.name }}</option></sc-for>
+            </select>
+          </label>
+          <button onClick="{{ toggleHsEdit }}" style="border:0;background:{{ hsBtn.bg }};color:{{ hsBtn.fg }};padding:9px 12px;border-radius:8px;font:600 13px Heebo">{{ hsBtn.label }}</button>
+          <sc-for list="{{ hsList }}" as="h" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:8px;font:400 12px Heebo;padding:6px 0;border-top:1px solid #EEF0F2">
+              <span style="flex:1">{{ h.label }}</span>
+              <span style="color:#5B6770;font-variant-numeric:tabular-nums">{{ h.coords }}</span>
+              <button onClick="{{ h.remove }}" aria-label="Remove hotspot" style="border:0;background:transparent;color:#B42318;font:600 14px Heebo">×</button>
+            </div>
+          </sc-for>
+          <div style="font:400 12px/1.45 Heebo;color:#5B6770">Stored as normalized x/y (0–1), so they survive resizing and crops.</div>
+        </div>
+      </sc-if>
+
+    </div>
+  </aside>
+</sc-if>
+
+<main ref="{{ canvasRef }}" style="flex:1;min-width:0;overflow:{{ mainOv }};height:{{ mainH }};padding:{{ canvasPad }};display:flex;justify-content:center;align-items:flex-start">
+  <div data-screen-label="Site preview" dir="{{ dir }}" lang="{{ lang }}" style="{{ frameStyle }}">
+
+    <sc-if value="{{ gridOn }}" hint-placeholder-val="{{ false }}">
+      <div aria-hidden="true" style="position:absolute;inset:0;z-index:40;pointer-events:none">
+        <div style="height:100%;max-width:var(--maxw);margin:0 auto;padding:0 var(--m);display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g)">
+          <sc-for list="{{ gridCols }}" as="gc" hint-placeholder-count="12">
+            <div style="position:relative;height:100%;border-left:.5px solid rgba(255,47,208,.7);border-right:.5px solid rgba(255,47,208,.7);background:rgba(255,47,208,.05)"><span style="position:absolute;top:70px;left:50%;transform:translateX(-50%);font:500 10px Heebo;color:#FF2FD0">{{ gc }}</span></div>
+          </sc-for>
+        </div>
+        <div style="position:sticky;top:72px;margin:0 auto;width:max-content;font:600 11px Heebo;color:#fff;background:#FF2FD0;padding:4px 10px;border-radius:999px">{{ gridLabel }}</div>
+      </div>
+    </sc-if>
+
+    <div style="position:sticky;top:0;height:0;z-index:200">
+    <sc-if value="{{ quoteOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeQuote }}" style="position:{{ ovPos }};top:0;left:0;right:0;height:{{ ovH }};z-index:100;background:rgba(20,26,30,.36);display:flex;align-items:center;justify-content:center;padding:20px">
+    <div role="dialog" aria-label="Request a quote" onClick="{{ stop }}" style="width:min(440px,100%);background:#fff;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.2)">
+      <div style="display:flex;justify-content:space-between;align-items:center"><strong style="font:700 20px Heebo">Request a quote</strong><button onClick="{{ closeQuote }}" aria-label="Close" style="border:0;background:#F2F3F5;width:32px;height:32px;border-radius:50%">×</button></div>
+      <sc-if value="{{ quoteSent }}" hint-placeholder-val="{{ false }}">
+        <div style="font:400 15px/1.5 Heebo;color:#1D2327">Thanks. Request for SKU {{ quoteSku }} recorded. <span style="color:#5B6770">(Simulated — nothing was sent.)</span></div>
+      </sc-if>
+      <sc-if value="{{ quoteForm }}" hint-placeholder-val="{{ true }}">
+        <div style="font:500 13px Heebo;color:#5B6770">Item: {{ quoteItem }} · SKU {{ quoteSku }}</div>
+        <input placeholder="Full name" style="height:44px;padding:0 14px;border:1px solid #E3E6E9;border-radius:10px;font:400 15px Heebo">
+        <input placeholder="Company" style="height:44px;padding:0 14px;border:1px solid #E3E6E9;border-radius:10px;font:400 15px Heebo">
+        <input placeholder="Email" type="email" style="height:44px;padding:0 14px;border:1px solid #E3E6E9;border-radius:10px;font:400 15px Heebo">
+        <input placeholder="Quantity" type="number" min="1" style="height:44px;padding:0 14px;border:1px solid #E3E6E9;border-radius:10px;font:400 15px Heebo">
+        <button onClick="{{ sendQuote }}" style="border:0;background:#006197;color:#fff;height:48px;border-radius:999px;font:600 15px Heebo">Send request</button>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
+    <sc-if value="{{ lb.show }}" hint-placeholder-val="{{ false }}">
+  <div role="dialog" aria-modal="true" aria-label="{{ lb.alt }}" style="position:{{ ovPos }};top:0;left:0;right:0;height:{{ ovH }};z-index:180;background:#FFFFFF;display:flex;align-items:center;justify-content:center">
+    <div role="img" aria-label="{{ lb.alt }}" style="position:absolute;inset:64px 16px 24px;background:center / contain no-repeat url({{ lb.src }})"></div>
+    <button onClick="{{ lb.close }}" aria-label="{{ L.closeLabel }}" style="position:absolute;top:10px;right:10px;width:44px;height:44px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;color:var(--primary);cursor:pointer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+  </div>
+</sc-if>
+    <sc-if value="{{ sh.show }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ sh.close }}" style="position:{{ ovPos }};top:0;left:0;right:0;height:{{ ovH }};z-index:170;background:rgba(20,26,30,0.55);display:flex;align-items:{{ sh.align }};justify-content:center;padding:{{ sh.pad }}">
+    <div onClick="{{ stop }}" role="dialog" aria-modal="true" aria-label="{{ sh.title }}" dir="{{ dir }}" style="position:relative;width:100%;max-width:480px;background:#FFFFFF;border-radius:{{ sh.radius }};padding:24px 22px calc(24px + env(safe-area-inset-bottom));box-sizing:border-box;display:flex;flex-direction:column;gap:18px;color:#1D2327;box-shadow:0 20px 60px rgba(0,0,0,0.2);font-family:Heebo,sans-serif">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0"><span style="font:500 13px Heebo;color:#006197">{{ sh.kicker }}</span><h2 style="margin:0;font:800 26px/1.15 Heebo;letter-spacing:-.01em">{{ sh.title }}</h2></div>
+        <button type="button" onClick="{{ sh.close }}" aria-label="{{ sh.closeLabel }}" style="border:0;background:transparent;color:#1D2327;width:44px;height:44px;margin:-8px -10px 0 -10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 44px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12"></path><path d="M18 6 6 18"></path></svg></button>
+      </div>
+      <p style="margin:0;font:400 15px/1.5 Heebo;color:#5B6770;text-wrap:pretty">{{ sh.page }}</p>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+        <button type="button" onClick="{{ sh.wa }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:transparent;color:#1D2327;cursor:pointer;padding:6px 0;font:600 12px Heebo"><span aria-hidden="true" style="width:56px;height:56px;border-radius:8px;background:#F4F6F7;display:flex;align-items:center;justify-content:center;color:#00AEA9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"></path><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"></path></svg></span>{{ sh.lWa }}</button>
+        <button type="button" onClick="{{ sh.sms }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:transparent;color:#1D2327;cursor:pointer;padding:6px 0;font:600 12px Heebo"><span aria-hidden="true" style="width:56px;height:56px;border-radius:8px;background:#F4F6F7;display:flex;align-items:center;justify-content:center;color:#00AEA9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></span>{{ sh.lSms }}</button>
+        <button type="button" onClick="{{ sh.mail }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:transparent;color:#1D2327;cursor:pointer;padding:6px 0;font:600 12px Heebo"><span aria-hidden="true" style="width:56px;height:56px;border-radius:8px;background:#F4F6F7;display:flex;align-items:center;justify-content:center;color:#00AEA9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg></span>{{ sh.lMail }}</button>
+        <button type="button" onClick="{{ sh.copy }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:transparent;color:#1D2327;cursor:pointer;padding:6px 0;font:600 12px Heebo"><span aria-hidden="true" style="width:56px;height:56px;border-radius:8px;background:#F4F6F7;display:flex;align-items:center;justify-content:center;color:#00AEA9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"></path><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"></path></svg></span>{{ sh.lCopy }}</button>
+      </div>
+      <div dir="ltr" style="display:flex;align-items:center;gap:10px;background:#F4F6F7;border-radius:8px;padding:0 6px 0 14px;height:48px"><span style="flex:1;min-width:0;font:400 14px Heebo;color:#5B6770;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ sh.url }}</span><button type="button" onClick="{{ sh.copy }}" style="border:0;background:#006197;color:#FFFFFF;border-radius:8px;padding:0 14px;height:36px;font:700 13px Heebo;cursor:pointer;white-space:nowrap">{{ sh.copyLabel }}</button></div>
+      <sc-if value="{{ sh.canMore }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ sh.more }}" style="align-self:center;border:0;background:transparent;color:#006197;padding:6px 10px;font:700 14px Heebo;cursor:pointer">{{ sh.moreLabel }}</button></sc-if>
+      <sc-if value="{{ sh.copied }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position:absolute;left:50%;top:-18px;transform:translateX(-50%);display:flex;align-items:center;height:36px;padding:0 14px;border-radius:8px;background:#00AEA9;color:#FFFFFF;font:700 13px Heebo;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,0.2)">✓ {{ sh.copiedLabel }}</span></sc-if>
+      <sc-if value="{{ sh.failed }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font:400 13px Heebo;color:#B42318;text-align:center">{{ sh.failLabel }}</span></sc-if>
+      <span role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">{{ sh.status }}</span>
+    </div>
+  </div>
+</sc-if>
+    </div>
+    <header style="position:sticky;top:0;z-index:30;background:{{ hdrBg }};border-bottom:2px solid var(--accent)">
+      <div dir="ltr" style="max-width:var(--maxw);margin:0 auto;padding:0 var(--m);height:64px;display:flex;align-items:center;gap:var(--g)">
+        <button onClick="{{ goHome }}" aria-label="MEDIKUP home" style="border:0;background:transparent;padding:0;display:flex"><sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}"><img src="assets/medikup-logo-bold-light.svg" alt="MEDIKUP" style="height:37px;width:auto;display:block"></sc-if><sc-if value="{{ notMobile }}" hint-placeholder-val="{{ true }}"><img src="assets/medikup-logo-header.svg?v=2" alt="MEDIKUP" style="height:37px;width:auto;display:block"></sc-if></button>
+        <div style="flex:1"></div>
+        <sc-if value="{{ deskCta }}" hint-placeholder-val="{{ false }}">
+          <nav dir="{{ dir }}" style="display:flex;gap:4px">
+            <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="3">
+              <button onClick="{{ n.go }}" aria-current="{{ n.cur }}" style="border:0;background:transparent;padding:8px 12px;border-radius:8px;font:600 15px var(--font);color:{{ n.menuFg }};display:flex;align-items:center;gap:6px;cursor:pointer;transition:color 160ms, background 160ms" style-hover="color:var(--primary);background:#EEF1F3">{{ n.label }}<sc-if value="{{ n.priv }}" hint-placeholder-val="{{ false }}"><span style="font:600 9px var(--font);letter-spacing:.06em;padding:2px 5px;border-radius:4px;background:#FFF0D6;color:#7A4B00">PRIVATE</span></sc-if></button>
+            </sc-for>
+          </nav>
+        </sc-if>
+        <sc-if value="{{ deskCta }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ showLang }}" hint-placeholder-val="{{ false }}">
+          <div dir="ltr" role="group" aria-label="Language" style="display:inline-flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:999px">
+            <sc-for list="{{ langOpts }}" as="o" hint-placeholder-count="2">
+              <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="white-space:nowrap;border:0;min-width:36px;padding:5px 10px;border-radius:999px;font:500 12px var(--font);background:{{ o.bg }};color:{{ o.fg }};cursor:pointer">{{ o.label }}</button>
+            </sc-for>
+          </div>
+          </sc-if>
+          <sc-if value="{{ showUnits }}" hint-placeholder-val="{{ true }}">
+          <div dir="ltr" role="group" aria-label="Units" style="display:inline-flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:999px">
+            <sc-for list="{{ unitOpts }}" as="o" hint-placeholder-count="2">
+              <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="white-space:nowrap;border:0;min-width:36px;padding:5px 10px;border-radius:999px;font:500 12px var(--font);background:{{ o.bg }};color:{{ o.fg }};cursor:pointer">{{ o.label }}</button>
+            </sc-for>
+          </div>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMenu }}" aria-label="{{ L.menu }}" aria-expanded="{{ menuOpen }}" style="position:relative;z-index:62;width:48px;height:48px;border:0;border-radius:8px;background:transparent;color:{{ hamColor }};cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex:0 0 48px"><span aria-hidden="true" style="position:relative;width:24px;height:24px;display:block"><span style="position:absolute;inset:0;display:flex;opacity:{{ bgA.op }};transform:{{ bgA.tf }};transition:opacity .25s ease, transform .3s cubic-bezier(.2,.8,.2,1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M416.19,83.81c-8.35-8.34-21.87-8.34-30.22,0L83.81,385.970c-8.34,8.34-8.34,21.87,0,30.22,4.17,4.170,9.64,6.26,15.11,6.26s10.94-2.090,15.11-6.26L416.19,114.03c8.34-8.34,8.34-21.87,0-30.22Z"></path><path d="M96.51,197.23l100.72-100.72c8.34-8.34,8.34-21.87,0-30.22s-21.87-8.34-30.22,0l-100.72,100.72c-8.34,8.34-8.34,21.87,0,30.22,4.17,4.17,9.64,6.26,15.11,6.26s10.94-2.09,15.11-6.26Z"></path><path d="M433.71,302.77c-8.34-8.34-21.87-8.34-30.22,0l-100.72,100.72c-8.34,8.34-8.34,21.87,0,30.22,4.17,4.17,9.64,6.26,15.11,6.26s10.94-2.09,15.11-6.26l100.72-100.72c8.34-8.34,8.34-21.87,0-30.22Z"></path></svg></span><span style="position:absolute;inset:0;display:flex;opacity:{{ bgB.op }};transform:{{ bgB.tf }};transition:opacity .25s ease, transform .3s cubic-bezier(.2,.8,.2,1)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6 6 18"></path></svg></span></span></button>
+        </sc-if>
+      </div>
+      <div onClick="{{ closeMenu }}" aria-hidden="true" style="position:absolute;top:0;left:0;right:0;height:{{ menuH }};z-index:60;background:rgba(0,0,0,0.35);transition:opacity 220ms ease;opacity:{{ menuBackdropOp }};pointer-events:{{ menuPE }}"></div>
+      <div role="menu" aria-label="{{ L.menu }}" style="position:absolute;top:0;left:0;right:0;height:{{ menuH }};z-index:61;background:var(--bg);padding:8px var(--m) calc(97px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;overflow:auto;box-shadow:0 20px 40px rgba(0,0,0,0.12);transition:transform 320ms cubic-bezier(.2,.8,.2,1), visibility 320ms;transform:{{ menuTransform }};visibility:{{ menuVis }}">
+        <div dir="ltr" style="display:flex;justify-content:space-between;align-items:center;height:48px">
+          <button onClick="{{ goHome }}" aria-label="MEDIKUP home" style="border:0;background:transparent;padding:0;cursor:pointer;display:flex"><img src="assets/medikup-logo-bold-light.svg" alt="" style="display:block;height:37px;width:auto"></button>
+          <span aria-hidden="true" style="width:48px;height:48px"></span>
+        </div>
+        <div style="width:100%;max-width:560px;margin:8px auto 0;display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+            <button role="menuitem" onClick="{{ n.go }}" aria-current="{{ n.cur }}" style="border:0;cursor:pointer;border-radius:8px;padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;font:600 17px var(--font);text-align:start;background:{{ n.menuBg }};color:{{ n.menuFg }};transition:color 160ms" style-hover="color:var(--primary)"><sc-if value="{{ n.ic_home }}" hint-placeholder-val="{{ false }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 24px"><path d="M4.5 13 14 4.5 23.5 13"></path><path d="M6.5 11.3V23.5h15V11.3"></path><path d="M11.5 23.5v-6.3h5v6.3"></path></svg></sc-if><sc-if value="{{ n.ic_industrial }}" hint-placeholder-val="{{ false }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 24px"><path d="M3.5 23.5h21"></path><path d="M4.5 23.5V12l5.5 3.6V12l5.5 3.6V12l5.5 3.6"></path><path d="M21 15.6V5.5h2.5v18"></path><path d="M8 19.5h2M13 19.5h2"></path></svg></sc-if><sc-if value="{{ n.ic_medical }}" hint-placeholder-val="{{ false }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 24px"><path d="M11.2 4.5h5.6v6.7h6.7v5.6h-6.7v6.7h-5.6v-6.7H4.5v-5.6h6.7z"></path></svg></sc-if><sc-if value="{{ n.ic_projects }}" hint-placeholder-val="{{ false }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 24px"><path d="M3.5 22.5V8.5a1.5 1.5 0 0 1 1.5-1.5h5l2 2.5h11a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5H5a1.5 1.5 0 0 1-1.5-1.5z"></path><path d="M10 17.5l2.5-3 2.5 2.5 3-4"></path></svg></sc-if><sc-if value="{{ n.ic_demo }}" hint-placeholder-val="{{ false }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 24px"><rect x="3.5" y="5" width="21" height="14" rx="1.5"></rect><path d="M14 19v4M9.5 23.5h9"></path></svg></sc-if>{{ n.label }}<sc-if value="{{ n.priv }}" hint-placeholder-val="{{ false }}"><span style="font:600 9px var(--font);letter-spacing:.06em;padding:2px 5px;border-radius:4px;background:#FFF0D6;color:#7A4B00">PRIVATE</span></sc-if></button>
+          </sc-for>
+        </div>
+        <div style="width:100%;max-width:560px;margin:auto auto 0;display:flex;flex-direction:row;gap:12px;padding:20px 16px 0;border-top:1px solid var(--line)">
+          <sc-if value="{{ showLang }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><span style="font:500 13px var(--font);color:var(--muted)">{{ L.language }}</span>
+            <div dir="ltr" role="group" aria-label="Language" style="display:flex;gap:2px;padding:3px;background:var(--surface);border-radius:10px">
+              <sc-for list="{{ langOpts }}" as="o" hint-placeholder-count="2">
+                <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="flex:1;border:0;height:44px;border-radius:8px;font:600 15px var(--font);background:{{ o.bg }};color:{{ o.fg }};cursor:pointer">{{ o.label }}</button>
+              </sc-for>
+            </div></div>
+          </sc-if>
+          <sc-if value="{{ showUnits }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px"><span style="font:500 13px var(--font);color:var(--muted)">{{ L.units }}</span>
+            <div dir="ltr" role="group" aria-label="Units" style="display:flex;gap:2px;padding:3px;background:var(--surface);border-radius:10px">
+              <sc-for list="{{ unitOpts }}" as="o" hint-placeholder-count="2">
+                <button onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="flex:1;border:0;height:44px;border-radius:8px;font:600 15px var(--font);background:{{ o.bg }};color:{{ o.fg }};cursor:pointer">{{ o.label }}</button>
+              </sc-for>
+            </div></div>
+          </sc-if>
+        </div>
+      </div>
+    </header>
+
+    <sc-if value="{{ hasCrumbs }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:var(--maxw);margin:0 auto;padding:20px var(--m) 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:500 13px var(--font);color:var(--muted)">
+        <sc-for list="{{ crumbs }}" as="c" hint-placeholder-count="2">
+          <span style="display:flex;gap:6px;align-items:center"><button onClick="{{ c.go }}" aria-current="{{ c.cur }}" style="border:0;background:transparent;padding:4px 0;font:500 13px var(--font);font-weight:{{ c.fw }};color:{{ c.fg }}">{{ c.label }}</button><span aria-hidden="true" style="color:var(--muted);font:500 15px var(--font);padding:0 4px">{{ c.sep }}</span></span>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ pHome }}" hint-placeholder-val="{{ true }}">
+      <section data-screen-label="Home" style="position:relative;width:100%;min-height:clamp(520px, 78vh, 860px);display:flex;align-items:flex-end;overflow:hidden;background:#1E2A33">
+        <div aria-hidden="true" style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#26343E 0 14px,#2B3A45 14px 28px)"></div>
+        <span aria-hidden="true" style="position:absolute;top:20px;inset-inline-end:var(--m);font:500 11px var(--font);letter-spacing:.08em;color:#B9C4CC">HERO VIDEO — REAL MEDIKUP INSTALLATION</span>
+        <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(to top, rgba(10,18,24,.72) 0%, rgba(10,18,24,.35) 45%, rgba(10,18,24,0) 75%)"></div>
+        <div style="position:relative;width:100%;max-width:var(--maxw);margin:0 auto;padding:var(--sec) var(--m);box-sizing:border-box;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g)">
+          <div style="grid-column:var(--spHeroT);display:flex;flex-direction:column;gap:20px">
+            <div style="font:500 13px var(--font);letter-spacing:.12em;text-transform:uppercase;color:#FFFFFF">MEDIKUP</div>
+            <h1 style="margin:0;font:var(--wh1) var(--h1)/1.02 var(--font);letter-spacing:-.025em;color:#FFFFFF;text-wrap:balance">{{ L.heroTitle }}</h1>
+            <p style="margin:0;font:400 calc(var(--body) * 1.15)/1.5 var(--font);color:#FFFFFF;max-width:34em;text-wrap:pretty">{{ L.heroSub }}</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+              <button onClick="{{ goIndustrial }}" style="border:0;background:var(--accent);color:#fff;padding:0 24px;height:52px;border-radius:var(--rb);font:600 16px var(--font);cursor:pointer;transition:filter 160ms ease" style-hover="filter:brightness(.92)">{{ L.exploreIndustrial }}</button>
+              <sc-if value="{{ projectsOn }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ goProject }}" style="border:1.5px solid #FFFFFF;background:transparent;color:#FFFFFF;padding:0 24px;height:52px;border-radius:var(--rb);font:600 16px var(--font);cursor:pointer;transition:background 160ms ease" style-hover="background:rgba(255,255,255,.14)">{{ L.seeProject }}</button>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section style="max-width:var(--maxw);margin:0 auto;padding:var(--sec) var(--m);display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:var(--g)">
+        <h2 style="grid-column:1 / -1;margin:0 0 8px;font:var(--wh2) var(--h2)/1.1 var(--font);letter-spacing:-.02em;color:var(--ink)">{{ L.catalogs }}</h2>
+        <sc-for list="{{ homeCats }}" as="c" hint-placeholder-count="2">
+          <button onClick="{{ c.go }}" disabled="{{ c.dis }}" style="grid-column:var(--sp2);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:flex;flex-direction:column;opacity:{{ c.op }}">
+            <div style="aspect-ratio:16/9;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">{{ c.media }}</div>
+            <div style="padding:20px 24px 24px;display:flex;flex-direction:column;gap:6px">
+              <span style="font:var(--wh3) var(--h3)/1.2 var(--font);color:var(--ink)">{{ c.name }}</span>
+              <span style="font:500 14px var(--font);color:{{ c.subFg }}">{{ c.sub }}</span>
+            </div>
+          </button>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ pIndustrial }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Industrial catalog" style="max-width:var(--maxw);margin:0 auto;padding:calc(var(--sec) * .6) var(--m) var(--sec);display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:var(--g)">
+        <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:16px;margin-bottom:24px">
+          <h1 style="margin:0;font:var(--wh1) var(--h1)/1.02 var(--font);letter-spacing:-.025em;color:var(--ink)">{{ L.industrialCatalog }}</h1>
+          <p style="margin:0;font:400 calc(var(--body) * 1.1)/1.5 var(--font);color:var(--muted);max-width:36em">{{ L.indSub }}</p>
+          <div style="position:relative;max-width:520px;margin-top:8px">
+            <input type="search" value="{{ query }}" onChange="{{ onQuery }}" placeholder="{{ L.search }}" aria-label="{{ L.search }}" style="width:100%;height:48px;padding:0 18px;border:1px solid var(--line);border-radius:var(--rb);background:var(--surface);font:400 16px var(--font);color:var(--ink);outline-color:var(--accentInk)">
+          </div>
+        </div>
+        <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+          <div style="grid-column:1 / -1;display:flex;flex-direction:column;border-top:1px solid var(--line);margin-bottom:32px">
+            <sc-for list="{{ results }}" as="r" hint-placeholder-count="3">
+              <button onClick="{{ r.go }}" style="display:flex;align-items:center;gap:16px;border:0;border-bottom:1px solid var(--line);background:transparent;padding:14px 0;text-align:start;min-height:52px">
+                <span style="flex:1;font:500 16px var(--font);color:var(--ink)">{{ r.name }}</span>
+                <span style="font:500 13px var(--font);color:var(--muted);font-variant-numeric:tabular-nums">{{ r.meta }}</span>
+              </button>
+            </sc-for>
+            <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:20px 0;font:400 15px var(--font);color:var(--muted)">{{ L.noResults }}</div>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-for list="{{ families }}" as="f" hint-placeholder-count="5">
+          <button onClick="{{ f.go }}" style="grid-column:var(--sp3);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:block;position:relative;aspect-ratio:var(--famAR);transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-start;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">{{ f.media }}<sc-if value="{{ f.img }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ f.name }}" style="position:absolute;inset:0;background:center / cover no-repeat url({{ f.img }})"></div></sc-if></div>
+            <div style="position:absolute;left:0;right:0;bottom:0;z-index:1;box-sizing:border-box;padding:18px 20px 22px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;background:rgba(255,255,255,.6);backdrop-filter:none">
+              <span style="font:var(--wh3) var(--h3)/1.2 var(--font);color:var(--primary)">{{ f.name }}</span>
+              <span style="display:flex;gap:8px;align-items:center;font:500 13px var(--font);color:var(--muted)"><sc-if value="{{ f.pending }}" hint-placeholder-val="{{ false }}"><span style="font:600 11px var(--font);padding:2px 8px;border-radius:999px;background:var(--surface);color:var(--muted)">{{ L.dataPending }}</span></sc-if></span>
+            </div>
+          </button>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ pFamily }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Family" style="max-width:var(--maxw);margin:0 auto;padding:calc(var(--sec) * .6) var(--m) var(--sec);display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:var(--g)">
+        <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:14px;margin-bottom:24px">
+          <h1 style="margin:0;font:var(--wh1) var(--h1)/1.02 var(--font);letter-spacing:-.025em;color:var(--primary)">{{ fam.name }}</h1>
+          <p style="margin:0;font:400 calc(var(--body) * 1.1)/1.5 var(--font);color:var(--muted);max-width:36em">{{ fam.sub }}</p>
+        </div>
+        <sc-if value="{{ famMob }}" hint-placeholder-val="{{ false }}">
+          <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:20px;margin-top:-8px">
+            <div role="tablist" style="display:flex;border-bottom:1px solid var(--line)">
+              <sc-for list="{{ famTabs }}" as="t" hint-placeholder-count="2">
+                <button role="tab" aria-selected="{{ t.on }}" onClick="{{ t.go }}" style="flex:1;border:0;background:transparent;height:48px;font:600 15px var(--font);color:{{ t.fg }};box-shadow:{{ t.sh }};cursor:pointer;letter-spacing:.02em">{{ t.label }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ famTabInfo }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:16px">
+                <h2 style="margin:0;font:var(--wh2) 22px/1.2 var(--font);letter-spacing:-.01em;color:var(--ink)">{{ L.keyFeatures }}</h2>
+                <div style="display:grid;grid-template-columns:repeat(var(--featCols),minmax(0,1fr));column-gap:var(--g);row-gap:24px">
+                  <sc-for list="{{ famFeatures }}" as="ff" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                      <div role="img" aria-label="{{ ff.title }}" style="aspect-ratio:1/1;border-radius:calc(var(--r) * .75);background:var(--surface) center / cover no-repeat url({{ ff.img }})"></div>
+                      <h3 style="margin:4px 0 0;display:flex;align-items:center;gap:8px;font:var(--wh3) 15px/1.3 var(--font);color:var(--primary)"><sc-if value="{{ ff.ic }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="flex:0 0 22px;width:22px;height:22px;background:center / contain no-repeat url({{ ff.ic }})"></span></sc-if>{{ ff.title }}</h3>
+                      <p style="margin:0;font:400 13px/1.5 var(--font);color:var(--muted);text-wrap:pretty">{{ ff.body }}</p>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;margin-top:12px">
+                  <button onClick="{{ toggleFamTable }}" aria-expanded="{{ famTableOpen }}" style="border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:{{ hdFamTable.bg }};margin-inline:{{ hdFamTable.mx }};height:56px;padding:0 {{ hdFamTable.px }};display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 16px var(--font);color:{{ hdFamTable.fg }};transition:background 200ms ease,color 200ms ease;cursor:pointer;text-align:start" style-hover="color:var(--primary)">{{ L.allSizes }}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 220ms ease;transform:{{ famTableChev }}"><path d="M6 9l6 6 6-6"></path></svg></button>
+                  <sc-if value="{{ famTableOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin:20px 0;overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)">
+            <table style="width:100%;min-width:720px;border-collapse:collapse;font:500 14px var(--font);font-variant-numeric:tabular-nums">
+              <thead><tr style="background:var(--surface);color:var(--muted)">
+                <th style="text-align:start;padding:12px 16px;font-weight:500">{{ L.allSizes }}</th><th style="text-align:start;padding:12px 16px;font-weight:500">{{ L.sku }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.width }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.height }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.depth }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.capacity }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.load }}</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ famTable }}" as="r" hint-placeholder-count="6">
+                  <tr onClick="{{ r.go }}" style="cursor:pointer;background:{{ r.bg }};border-top:1px solid var(--line);color:var(--ink)" style-hover="background:#F6F8F9">
+                    <td style="padding:12px 16px;font-weight:{{ r.fw }}">{{ r.name }}</td><td style="padding:12px 16px">{{ r.sku }}</td><td style="padding:12px 16px;text-align:end">{{ r.w }}</td><td style="padding:12px 16px;text-align:end">{{ r.h }}</td><td style="padding:12px 16px;text-align:end">{{ r.d }}</td><td style="padding:12px 16px;text-align:end">{{ r.ml }}</td><td style="padding:12px 16px;text-align:end">{{ r.kg }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ famTabProducts }}" hint-placeholder-val="{{ true }}">
+              <div role="group" aria-label="{{ L.size }}" style="display:flex;flex-wrap:wrap;gap:8px">
+                <sc-for list="{{ famChips }}" as="c" hint-placeholder-count="6">
+                  <button onClick="{{ c.go }}" aria-pressed="{{ c.on }}" style="border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};height:40px;padding:0 14px;border-radius:999px;font:600 14px var(--font);cursor:pointer;white-space:nowrap;transition:background .2s ease,color .2s ease,border-color .2s ease" style-hover="border-color:var(--primary)">{{ c.label }}</button>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:center;gap:4px;margin-inline:var(--carMx);align-self:center;width:100%;max-width:var(--carW)"><button onClick="{{ famPrev }}" aria-label="{{ L.prev }}" style="flex:0 0 40px;width:40px;height:48px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;opacity:{{ famPrevOp }};pointer-events:{{ famPrevPe }};transition:opacity 160ms, color 160ms" style-hover="color:var(--primary)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ famChevStart }}"><path d="M15 6l-6 6 6 6"></path></svg></button><div ref="{{ famScrollRef }}" onScroll="{{ famOnScroll }}" style="flex:1;min-width:0;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 0 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch">
+                <sc-for list="{{ famCards }}" as="c" hint-placeholder-count="2">
+                  <button onClick="{{ c.go }}" aria-label="{{ c.aria }}" style="flex:0 0 100%;scroll-snap-align:center;text-align:start;border:0;background:#F6F8F9;border-radius:var(--r);padding:18px 18px 20px;display:flex;flex-direction:column;gap:4px;cursor:pointer;transition:background .2s ease" style-hover="background:#EEF1F3">
+                    <span style="font:var(--wh3) 18px/1.25 var(--font);color:var(--primary)">{{ c.name }}</span>
+                    <span style="font:500 13px var(--font);color:var(--muted);font-variant-numeric:tabular-nums">{{ c.sku }}</span>
+                    <span dir="ltr" style="margin-top:14px;width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center">
+                      <span style="display:block;width:{{ c.lw }};aspect-ratio:{{ c.ar }};background:center / contain no-repeat url({{ c.img }});filter:drop-shadow(0 9px 5px rgba(20,32,44,.16)) drop-shadow(0 2px 1.5px rgba(20,32,44,.14))"></span>
+                    </span>
+                  </button>
+                </sc-for>
+              </div><button onClick="{{ famNext }}" aria-label="{{ L.next }}" style="flex:0 0 40px;width:40px;height:48px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;opacity:{{ famNextOp }};pointer-events:{{ famNextPe }};transition:opacity 160ms, color 160ms" style-hover="color:var(--primary)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ famChevEnd }}"><path d="M15 6l-6 6 6 6"></path></svg></button></div>
+              <div style="display:flex;flex-direction:column;border-top:1px solid var(--line)">
+                <button onClick="{{ goRavSystems }}" style="border:0;border-bottom:1px solid var(--line);background:var(--bg);height:56px;padding:0;text-align:start;font:600 16px var(--font);color:var(--ink);cursor:pointer;transition:color 160ms" style-hover="color:var(--primary)">{{ L.ravRails }}</button>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ famDesk }}" hint-placeholder-val="{{ true }}">
+        <sc-if value="{{ fam.hasLineup }}" hint-placeholder-val="{{ false }}">
+          <div style="grid-column:1 / -1;border-radius:var(--r);background:var(--surface);padding:32px 24px 20px;margin-bottom:var(--g)">
+            <div style="max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(10px,2vw,20px)">
+              <sc-for list="{{ fam.lineup }}" as="v" hint-placeholder-count="6">
+                <button onClick="{{ v.go }}" aria-label="{{ v.aria }}" style="border:0;background:transparent;display:flex;align-items:center;gap:clamp(12px,3vw,32px);padding:8px;border-radius:12px;cursor:pointer;text-align:start" style-hover="color:var(--primary)">
+                  <span style="flex:0 0 clamp(84px,18%,150px);display:flex;flex-direction:column;gap:4px">
+                    <span style="font:600 15px var(--font);color:var(--ink)">{{ v.label }}</span>
+                    <span style="font:500 12px var(--font);color:var(--muted);font-variant-numeric:tabular-nums">{{ v.sku }}</span>
+                  </span>
+                  <span dir="ltr" style="flex:1;min-width:0;display:flex;justify-content:flex-start">
+                    <span style="display:block;width:{{ v.lw }};aspect-ratio:{{ v.ar }};background:left center / contain no-repeat url({{ v.img }})"></span>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+            <div style="text-align:center;margin-top:16px;font:500 12px var(--font);color:var(--muted)">{{ L.lineupNote }}</div>
+          </div>
+        </sc-if>
+        <sc-for list="{{ fam.groups }}" as="g" hint-placeholder-count="1">
+          <h2 style="grid-column:1 / -1;margin:32px 0 4px;font:var(--wh2) calc(var(--h2) * .8)/1.15 var(--font);letter-spacing:-.015em;color:var(--ink)">{{ g.title }}</h2>
+          <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3">
+            <button onClick="{{ p.go }}" style="grid-column:var(--sp3);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
+              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ p.name }}" style="aspect-ratio:4/5;width:100%;background:center / cover no-repeat url({{ p.img }}) var(--bg);box-sizing:border-box"></div></sc-if><sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:4/5;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PRODUCT PHOTO</div></sc-if>
+              <div style="padding:18px 20px 22px;display:flex;flex-direction:column;gap:6px">
+                <span style="font:var(--wh3) var(--h3)/1.2 var(--font);color:var(--ink)">{{ p.name }}</span>
+                <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:500 13px var(--font);color:var(--muted)">{{ p.sub }}<sc-if value="{{ p.pending }}" hint-placeholder-val="{{ false }}"><span style="font:600 11px var(--font);padding:2px 8px;border-radius:999px;background:var(--surface);color:var(--muted)">{{ L.dataPending }}</span></sc-if></span>
+              </div>
+            </button>
+          </sc-for>
+        </sc-for>
+        </sc-if>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ pProduct }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Product" style="max-width:var(--maxw);margin:0 auto;padding:24px var(--m) 0;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:32px">
+        <div style="grid-column:var(--spA);display:flex;flex-direction:column;gap:12px;min-width:0">
+          <sc-if value="{{ titleTop }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:10px;margin-bottom:8px"><h1 style="margin:0;font:var(--wh1) calc(var(--h1) * .78)/1.05 var(--font);letter-spacing:-.02em;color:var(--primary)">{{ prod.title }}</h1>
+            <sc-if value="{{ prod.hasSku }}" hint-placeholder-val="{{ true }}">
+              <div style="font:500 14px var(--font);color:var(--muted);font-variant-numeric:tabular-nums">{{ L.sku }} {{ prod.sku }}</div>
+            </sc-if><div aria-hidden="true" style="align-self:flex-start;width:calc((100% - (var(--infoCols) - 1) * var(--g)) / var(--infoCols));height:4px;margin:6px 0 2px;background:var(--primary)"></div></div></sc-if>
+          <sc-if value="{{ prod.carousel }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:4px;margin-inline:var(--carMx);margin-top:var(--carLift);position:relative;z-index:0">
+            <button onClick="{{ pPrev }}" aria-label="{{ L.prev }}" style="flex:0 0 40px;width:40px;height:48px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;opacity:{{ pPrevOp }};pointer-events:{{ pPrevPe }};transition:opacity 160ms, color 160ms" style-hover="color:var(--primary)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ pChevStart }}"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            <div data-pscroll="1" ref="{{ pScrollRef }}" onScroll="{{ pOnScroll }}" style="flex:1;min-width:0;display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none">
+              <sc-for list="{{ prod.slides }}" as="sl" hint-placeholder-count="2">
+                <div aria-label="{{ sl.alt }}" style="flex:0 0 100%;scroll-snap-align:{{ sl.snap }};position:relative;aspect-ratio:1/1;border-radius:var(--r);background:transparent;overflow:hidden;outline:{{ sl.ol }};outline-offset:-1px"><div style="position:absolute;inset:8%;background:center / contain no-repeat url({{ sl.src }});filter:drop-shadow(0 10px 6px rgba(20,32,44,.16)) drop-shadow(0 2px 1.5px rgba(20,32,44,.14))"></div><sc-if value="{{ sl.canZoom }}" hint-placeholder-val="{{ false }}"><button onClick="{{ sl.zoom }}" aria-label="{{ L.fullscreen }}" style="position:absolute;top:8px;right:8px;z-index:2;width:44px;height:44px;border:0;border-radius:8px;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer"><span aria-hidden="true" style="width:24px;height:24px;background:var(--primary);-webkit-mask:url(assets/ic-fullscreen.svg) center / contain no-repeat;mask:url(assets/ic-fullscreen.svg) center / contain no-repeat"></span></button></sc-if></div>
+              </sc-for>
+            </div>
+            <button onClick="{{ pNext }}" aria-label="{{ L.next }}" style="flex:0 0 40px;width:40px;height:48px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;opacity:{{ pNextOp }};pointer-events:{{ pNextPe }};transition:opacity 160ms, color 160ms" style-hover="color:var(--primary)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ pChevEnd }}"><path d="M15 6l-6 6 6 6"></path></svg></button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ prod.single }}" hint-placeholder-val="{{ true }}">
+          <div style="position:relative;aspect-ratio:{{ prod.singleAr }};border-radius:var(--r);background:radial-gradient(120% 90% at 50% 45%,var(--bg) 0%,var(--surface) 72%);overflow:hidden">
+            <sc-for list="{{ prod.photos }}" as="ph" hint-placeholder-count="0">
+              <div role="img" aria-label="{{ ph.alt }}" style="position:absolute;inset:7%;background:center / contain no-repeat url({{ ph.src }})"></div><sc-if value="{{ ph.canZoom }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ph.zoom }}" aria-label="{{ L.fullscreen }}" style="position:absolute;top:8px;right:8px;z-index:2;width:44px;height:44px;border:0;border-radius:8px;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer"><span aria-hidden="true" style="width:24px;height:24px;background:var(--primary);-webkit-mask:url(assets/ic-fullscreen.svg) center / contain no-repeat;mask:url(assets/ic-fullscreen.svg) center / contain no-repeat"></span></button></sc-if>
+            </sc-for>
+            <sc-if value="{{ prod.noPhoto }}" hint-placeholder-val="{{ false }}">
+              <span style="position:absolute;inset-inline-start:16px;bottom:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PRODUCT PHOTO PENDING</span>
+            </sc-if>
+          </div>
+          <sc-if value="{{ prod.hasGal }}" hint-placeholder-val="{{ false }}">
+            <div role="group" aria-label="{{ prod.title }}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px">
+              <sc-for list="{{ prod.gal }}" as="gp" hint-placeholder-count="3">
+                <button onClick="{{ gp.go }}" aria-label="{{ gp.aria }}" aria-pressed="{{ gp.on }}" style="flex:0 0 64px;width:64px;aspect-ratio:4/5;border:1.5px solid {{ gp.bd }};border-radius:8px;background:var(--bg) center / contain no-repeat url({{ gp.src }});padding:0;cursor:pointer;transition:border-color 160ms" style-hover="border-color:var(--primary)"></button>
+              </sc-for>
+            </div>
+          </sc-if>
+          </sc-if>
+        </div>
+        <div style="grid-column:var(--spB);display:flex;flex-direction:column;gap:20px;margin-top:var(--descLift);position:relative">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-if value="{{ notMobile }}" hint-placeholder-val="{{ false }}"><button onClick="{{ prod.goFam }}" style="align-self:flex-start;border:0;background:transparent;padding:0;font:500 13px var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--accentInk)">{{ prod.famName }}</button></sc-if>
+            <sc-if value="{{ titleSide }}" hint-placeholder-val="{{ true }}"><h1 style="margin:0;font:var(--wh1) calc(var(--h1) * .78)/1.05 var(--font);letter-spacing:-.02em;color:var(--primary)">{{ prod.title }}</h1>
+            <sc-if value="{{ prod.hasSku }}" hint-placeholder-val="{{ true }}">
+              <div style="font:500 14px var(--font);color:var(--muted);font-variant-numeric:tabular-nums">{{ L.sku }} {{ prod.sku }}</div>
+            </sc-if></sc-if>
+            <sc-if value="{{ titleSide }}" hint-placeholder-val="{{ true }}"><div aria-hidden="true" style="align-self:flex-start;width:calc((100% - (var(--infoCols) - 1) * var(--g)) / var(--infoCols));height:4px;margin:6px 0 2px;background:var(--primary)"></div></sc-if>
+            <p style="margin:4px 0 0;font:400 var(--body)/1.55 var(--font);color:var(--muted);text-wrap:pretty">{{ prod.desc }}</p>
+            <sc-if value="{{ prod.descFallback }}" hint-placeholder-val="{{ false }}"><span style="font:500 11px var(--font);color:var(--muted)">{{ L.fallback }}</span></sc-if>
+          </div>
+          <sc-if value="{{ prod.hasOpts }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <sc-for list="{{ prod.opts }}" as="og" hint-placeholder-count="2">
+                <div role="radiogroup" aria-label="{{ og.label }}" style="display:flex;flex-direction:column;gap:8px">
+                  <span style="font:600 14px var(--font);color:var(--ink)">{{ og.label }}</span>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px">
+                    <sc-for list="{{ og.vals }}" as="ov" hint-placeholder-count="3">
+                      <button role="radio" aria-checked="{{ ov.on }}" onClick="{{ ov.go }}" style="height:40px;padding:0 16px;border-radius:8px;border:1.5px {{ ov.bs }} {{ ov.bd }};background:{{ ov.bg }};color:{{ ov.fg }};font:600 14px var(--font);cursor:pointer;transition:border-color 160ms, background 160ms" style-hover="border-color:var(--primary)">{{ ov.label }}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ prod.hasVariants }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-if value="{{ notMobile }}" hint-placeholder-val="{{ true }}"><div style="font:500 14px var(--font);color:var(--ink)">{{ L.size }}</div></sc-if>
+              <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ toggleSizes }}" aria-expanded="{{ sizesOpen }}" style="border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:{{ hdSizes.bg }};margin-inline:{{ hdSizes.mx }};height:56px;padding:0 {{ hdSizes.px }};display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 16px var(--font);color:{{ hdSizes.fg }};transition:background 200ms ease,color 200ms ease;cursor:pointer;text-align:start" style-hover="color:var(--primary)">{{ L.moreSizes }}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 220ms ease;transform:{{ sizesChev }}"><path d="M6 9l6 6 6-6"></path></svg></button>
+              </sc-if>
+              <sc-if value="{{ sizesShown }}" hint-placeholder-val="{{ true }}">
+              <div role="radiogroup" aria-label="{{ L.size }}" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-bottom:var(--accPad)">
+                <sc-for list="{{ prod.variants }}" as="v" hint-placeholder-count="6">
+                  <button role="radio" aria-checked="{{ v.on }}" onClick="{{ v.go }}" style="border:{{ v.bdw }} solid {{ v.bd }};background:{{ v.bg }};border-radius:calc(var(--r) * .8);padding:12px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:44px;cursor:pointer;transition:border-color 160ms" style-hover="border-color:var(--primary)">
+                    <span style="width:100%;aspect-ratio:5/3;display:flex;align-items:flex-end;justify-content:center;direction:ltr"><span dir="ltr" style="display:block;width:{{ v.lw }};aspect-ratio:{{ v.ar }};background:center bottom / contain no-repeat url({{ v.img }})"></span></span>
+                    <span style="font:600 13px var(--font);color:var(--ink)">{{ v.label }}</span>
+                  </button>
+                </sc-for>
+              </div>
+              </sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-if value="{{ notMobile }}" hint-placeholder-val="{{ true }}"><div style="font:500 14px var(--font);color:var(--ink)">{{ L.color }}: <span style="color:var(--muted)">{{ prod.color }}</span></div></sc-if>
+              <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ toggleColor }}" aria-expanded="{{ colorOpen }}" style="border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:{{ hdColor.bg }};margin-inline:{{ hdColor.mx }};height:56px;padding:0 {{ hdColor.px }};margin-top:-21px;display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 16px var(--font);color:{{ hdColor.fg }};transition:background 200ms ease,color 200ms ease;cursor:pointer;text-align:start" style-hover="color:var(--primary)">{{ L.color }}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 220ms ease;transform:{{ colorChev }}"><path d="M6 9l6 6 6-6"></path></svg></button>
+              </sc-if>
+              <sc-if value="{{ colorShown }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:var(--accPad)"><span style="display:flex;align-items:center;gap:8px;font:500 15px var(--font);color:var(--ink)"><span aria-hidden="true" style="flex:0 0 22px;width:22px;height:22px;background:center / contain no-repeat url(assets/ic-color.svg)"></span>{{ prod.color }}</span><span aria-hidden="true" style="flex:0 0 20px;width:20px;height:20px;border-radius:3px;background:#D7D7D7;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)"></span></div>
+              </sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ prod.hasPrice }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><span style="font:700 28px var(--font);color:var(--ink);font-variant-numeric:tabular-nums">{{ prod.price }}</span><span style="font:600 11px var(--font);padding:3px 8px;border-radius:999px;background:#FFF0D6;color:#7A4B00">{{ prod.priceNote }}</span></div>
+          </sc-if>
+          <sc-if value="{{ deskCta }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+            <sc-if value="{{ quoteOn }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ openQuote }}" style="border:0;background:var(--accent);color:#fff;padding:0 28px;height:52px;border-radius:var(--rb);font:600 16px var(--font);cursor:pointer;transition:filter 160ms ease, transform 160ms ease" style-hover="filter:brightness(.92)" style-active="transform:translateY(1px)">{{ L.requestQuote }}</button>
+            </sc-if>
+            <button onClick="{{ sharePage }}" aria-label="{{ shareAria }}" style="height:52px;padding:0 20px;border:1.5px solid var(--accent);border-radius:var(--rb);background:var(--bg);color:var(--ink);display:flex;align-items:center;gap:10px;font:600 15px var(--font);cursor:pointer;transition:background 160ms ease" style-hover="background:#F6F8F9"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4"></path><path d="M15.4 6.5l-6.8 4"></path></svg>{{ prod.shareLabel }}</button>
+          </div>
+          </sc-if>
+        </div>
+      </section>
+
+      <sc-if value="{{ prod.hasSpecs }}" hint-placeholder-val="{{ false }}">
+        <section style="max-width:var(--maxw);margin:0 auto;padding:var(--specPadT) var(--m) 0;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:var(--specGap)">
+          <sc-if value="{{ notMobile }}" hint-placeholder-val="{{ true }}">
+          <div style="grid-column:1 / -1;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+            <h2 style="margin:0;font:var(--wh2) var(--h2)/1.1 var(--font);letter-spacing:-.02em;color:var(--ink)">{{ L.specs }}</h2>
+          </div>
+          </sc-if>
+          <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ toggleSpecs }}" aria-expanded="{{ specsOpen }}" style="grid-column:1 / -1;margin-top:-1px;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:{{ hdSpecs.bg }};margin-inline:{{ hdSpecs.mx }};height:56px;padding:0 {{ hdSpecs.px }};display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 16px var(--font);color:{{ hdSpecs.fg }};transition:background 200ms ease,color 200ms ease;cursor:pointer;text-align:start" style-hover="color:var(--primary)">{{ L.specs }}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 220ms ease;transform:{{ specsChev }}"><path d="M6 9l6 6 6-6"></path></svg></button>
+          </sc-if>
+          <sc-if value="{{ specsShown }}" hint-placeholder-val="{{ true }}">
+          <div style="grid-column:var(--sp2);border-radius:var(--r);background:transparent;padding:var(--accPad) 0 0;display:flex;flex-direction:column;gap:12px;align-self:start">
+            <div dir="ltr" style="position:relative;aspect-ratio:418/380;width:100%">
+              <sc-for list="{{ prod.diagrams }}" as="dg" hint-placeholder-count="0"><div role="img" aria-label="{{ dg.alt }}" style="position:absolute;left:2.392%;top:0;width:95.268%;height:92.632%;background:center / contain no-repeat url({{ dg.src }})"></div></sc-for>
+              {{ prod.dimSvg }}
+            </div>
+            <sc-if value="{{ hasDiagram }}" hint-placeholder-val="{{ true }}"><span style="font:500 12px/1.4 var(--font);color:var(--muted)">{{ L.illustrative }}</span></sc-if>
+          </div>
+          <div style="grid-column:var(--sp2);display:flex;flex-direction:column;gap:36px;padding:var(--accPad) 0 var(--accPad)">
+            <sc-for list="{{ prod.specGroups }}" as="g" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--ink)"><span style="display:flex;align-items:center;gap:10px"><sc-if value="{{ g.icS }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="display:block;flex:0 0 24px;width:24px;height:24px;background:center / contain no-repeat url({{ g.icS }})"></span></sc-if><sc-if value="{{ g.icC }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="display:block;flex:0 0 23px;width:23px;height:24px;background:center / contain no-repeat url({{ g.icC }})"></span></sc-if><span style="font:var(--wh3) 17px var(--font);color:var(--ink)">{{ g.title }}</span><span aria-hidden="true" style="display:block;width:{{ g.iw }};height:{{ g.ih }};background:center / contain no-repeat url({{ g.icon }})"></span></span><span style="font:500 13px var(--font);color:var(--muted)">{{ g.sub }}</span></div>
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);font:500 15px var(--font)">
+                    <span style="display:flex;align-items:center;gap:8px;color:var(--muted)"><sc-if value="{{ r.ic }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="flex:0 0 20px;width:20px;height:20px;background:center / contain no-repeat url({{ r.ic }})"></span></sc-if>{{ r.label }}</span>
+                    <span style="display:flex;align-items:baseline;gap:8px;unicode-bidi:isolate;font-variant-numeric:tabular-nums"><span style="color:var(--ink);font-weight:600">{{ r.value }}</span><span style="color:var(--muted);font-size:13px">{{ r.alt }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+            <sc-if value="{{ prod.hasLoadNote }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:-20px 0 0;font:400 13px/1.5 var(--font);color:var(--muted)">{{ L.loadNote }}</p>
+            </sc-if>
+          </div>
+          </sc-if>
+          <sc-if value="{{ tableBtn }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ toggleTable }}" aria-expanded="{{ tableOpen }}" style="grid-column:1 / -1;margin-top:-1px;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:{{ hdTable.bg }};margin-inline:{{ hdTable.mx }};height:56px;padding:0 {{ hdTable.px }};display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 16px var(--font);color:{{ hdTable.fg }};transition:background 200ms ease,color 200ms ease;cursor:pointer;text-align:start" style-hover="color:var(--primary)">{{ L.allSizes }}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 220ms ease;transform:{{ tableChev }}"><path d="M6 9l6 6 6-6"></path></svg></button>
+          </sc-if>
+          <sc-if value="{{ tableShown }}" hint-placeholder-val="{{ true }}">
+          <div style="grid-column:1 / -1;margin:var(--accPad) 0;overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)">
+            <table style="width:100%;min-width:720px;border-collapse:collapse;font:500 14px var(--font);font-variant-numeric:tabular-nums">
+              <thead><tr style="background:var(--surface);color:var(--muted)">
+                <th style="text-align:start;padding:12px 16px;font-weight:500">{{ L.allSizes }}</th><th style="text-align:start;padding:12px 16px;font-weight:500">{{ L.sku }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.width }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.height }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.depth }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.capacity }}</th><th style="text-align:end;padding:12px 16px;font-weight:500">{{ L.load }}</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ prod.table }}" as="r" hint-placeholder-count="6">
+                  <tr onClick="{{ r.go }}" style="cursor:pointer;background:{{ r.bg }};border-top:1px solid var(--line);color:var(--ink)" style-hover="background:#F6F8F9">
+                    <td style="padding:12px 16px;font-weight:{{ r.fw }}">{{ r.name }}</td><td style="padding:12px 16px">{{ r.sku }}</td><td style="padding:12px 16px;text-align:end">{{ r.w }}</td><td style="padding:12px 16px;text-align:end">{{ r.h }}</td><td style="padding:12px 16px;text-align:end">{{ r.d }}</td><td style="padding:12px 16px;text-align:end">{{ r.ml }}</td><td style="padding:12px 16px;text-align:end">{{ r.kg }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ prod.hasFeatures }}" hint-placeholder-val="{{ true }}">
+        <section style="max-width:var(--maxw);margin:0 auto;padding:var(--specPadT) var(--m) 0;display:flex;flex-direction:column;gap:var(--featGap)">
+          <sc-if value="{{ notMobile }}" hint-placeholder-val="{{ true }}"><h2 style="margin:0;font:var(--wh2) var(--h2)/1.1 var(--font);letter-spacing:-.02em;color:var(--ink)">{{ L.keyFeatures }}</h2></sc-if>
+          <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ toggleFeat }}" aria-expanded="{{ featOpen }}" style="margin-top:-1px;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:{{ hdFeat.bg }};margin-inline:{{ hdFeat.mx }};height:56px;padding:0 {{ hdFeat.px }};display:flex;align-items:center;justify-content:space-between;gap:12px;font:600 16px var(--font);color:{{ hdFeat.fg }};transition:background 200ms ease,color 200ms ease;cursor:pointer;text-align:start" style-hover="color:var(--primary)">{{ L.keyFeatures }}<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 220ms ease;transform:{{ featChev }}"><path d="M6 9l6 6 6-6"></path></svg></button>
+          </sc-if>
+          <sc-if value="{{ featShown }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:repeat(var(--featCols),minmax(0,1fr));column-gap:var(--g);row-gap:calc(var(--g) * 1.75);padding:var(--accPad) 0">
+            <sc-for list="{{ prod.features }}" as="f" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+                <div style="position:relative;overflow:hidden;aspect-ratio:1/1;border-radius:calc(var(--r) * .75);background:var(--surface);display:flex;align-items:flex-end;padding:12px;font:500 10px var(--font);letter-spacing:.08em;color:var(--muted)">{{ f.media }}<sc-if value="{{ f.img }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ f.title }}" style="position:absolute;inset:0;background:center / cover no-repeat url({{ f.img }})"></div></sc-if></div>
+                <sc-if value="{{ f.placeholder }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;font:600 11px var(--font);padding:3px 8px;border-radius:999px;background:#FFF0D6;color:#7A4B00">PLACEHOLDER</span></sc-if>
+                <h3 style="margin:4px 0 0;display:flex;align-items:center;gap:8px;font:var(--wh3) clamp(15px, calc(var(--h3) * .9), 24px)/1.3 var(--font);color:var(--primary)"><sc-if value="{{ f.ic }}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="flex:0 0 22px;width:22px;height:22px;background:center / contain no-repeat url({{ f.ic }})"></span></sc-if>{{ f.title }}</h3>
+                <p style="margin:0;font:400 clamp(13px, calc(var(--body) * .85), 17px)/1.5 var(--font);color:var(--muted);text-wrap:pretty">{{ f.body }}</p>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ prod.hasFiles }}" hint-placeholder-val="{{ false }}">
+        <section style="max-width:var(--maxw);margin:0 auto;padding:var(--sec) var(--m) 0;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:16px">
+          <h2 style="grid-column:1 / -1;margin:0;font:var(--wh2) var(--h2)/1.1 var(--font);letter-spacing:-.02em;color:var(--ink)">{{ L.downloads }}</h2>
+          <sc-for list="{{ prod.files }}" as="f" hint-placeholder-count="2">
+            <a href="#" onClick="{{ f.go }}" style="grid-column:var(--sp3);display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r);color:var(--ink);min-height:64px;transition:border-color 160ms" style-hover="border-color:var(--primary)">
+              <span style="font:700 11px var(--font);padding:6px 8px;border-radius:6px;background:var(--surface);color:var(--primary)">{{ f.type }}</span>
+              <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:500 15px var(--font)">{{ f.name }}</span><span style="font:500 12px var(--font);color:var(--muted)">{{ f.meta }}</span></span>
+              <span style="color:var(--primary);font:600 15px var(--font)">↓</span>
+            </a>
+          </sc-for>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ prod.hasBasedOn }}" hint-placeholder-val="{{ false }}">
+        <section style="max-width:var(--maxw);margin:0 auto;padding:var(--sec) var(--m) 0">
+          <button onClick="{{ prod.basedOn.go }}" style="width:100%;display:flex;align-items:center;gap:16px;text-align:start;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:20px 24px">
+            <span style="font:600 11px var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--accentInk)">{{ L.basedOn }}</span>
+            <span style="flex:1;font:var(--wh3) 18px var(--font);color:var(--ink)">{{ prod.basedOn.name }}</span>
+            <span style="font:600 11px var(--font);padding:3px 8px;border-radius:999px;background:#FFF0D6;color:#7A4B00">{{ L.pending }}</span>
+          </button>
+        </section>
+      </sc-if>
+
+      <sc-for list="{{ prod.relGroups }}" as="g" hint-placeholder-count="2">
+        <section style="max-width:var(--maxw);margin:0 auto;padding:var(--sec) var(--m) 0;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:16px">
+          <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:8px">
+            <h2 style="margin:0;font:var(--wh2) calc(var(--h2) * .8)/1.15 var(--font);letter-spacing:-.015em;color:var(--ink)">{{ g.title }}</h2>
+            <p style="margin:0;font:500 13px var(--font);color:#7A4B00">{{ g.note }}</p>
+          </div>
+          <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="4">
+            <button onClick="{{ p.go }}" style="grid-column:var(--sp4);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
+              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ p.name }}" style="aspect-ratio:4/5;width:100%;box-sizing:border-box;background:center / cover no-repeat url({{ p.img }}) var(--bg)"></div></sc-if><sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:4/5;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 10px,color-mix(in srgb,var(--surface),var(--ink) 5%) 10px 20px)"></div></sc-if>
+              <div style="padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px">
+                <sc-if value="{{ p.hasRel }}" hint-placeholder-val="{{ true }}"><span style="font:600 11px var(--font);letter-spacing:.05em;text-transform:uppercase;color:var(--accentInk)">{{ p.rel }}</span></sc-if>
+                <span style="font:var(--wh3) 15px/1.3 var(--font);color:var(--ink)">{{ p.name }}</span>
+              </div>
+            </button>
+          </sc-for>
+        </section>
+      </sc-for>
+
+      <sc-if value="{{ prod.hasProjects }}" hint-placeholder-val="{{ false }}">
+        <section style="max-width:var(--maxw);margin:0 auto;padding:var(--sec) var(--m) 0;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:16px">
+          <h2 style="grid-column:1 / -1;margin:0;font:var(--wh2) calc(var(--h2) * .8)/1.15 var(--font);letter-spacing:-.015em;color:var(--ink)">{{ L.featuredProjects }}</h2>
+          <sc-for list="{{ prod.projects }}" as="p" hint-placeholder-count="1">
+            <button onClick="{{ p.go }}" style="grid-column:var(--sp2);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
+              <div style="aspect-ratio:16/9;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PROJECT PHOTO</div>
+              <div style="padding:16px 20px 20px;font:var(--wh3) 17px var(--font);color:var(--ink)">{{ p.title }}</div>
+            </button>
+          </sc-for>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ prod.showAdmin }}" hint-placeholder-val="{{ false }}">
+        <section style="max-width:var(--maxw);margin:0 auto;padding:var(--sec) var(--m) 0">
+          <div style="border:1.5px dashed #C9A2E8;border-radius:12px;padding:16px 20px;background:#FAF5FF;display:flex;flex-direction:column;gap:6px;font:400 13px/1.5 Heebo;color:#4A2770">
+            <strong style="font:600 12px Heebo;letter-spacing:.06em;text-transform:uppercase">Editor only · hidden modules on this page</strong>
+            <sc-for list="{{ prod.adminNotes }}" as="n" hint-placeholder-count="2"><span>{{ n }}</span></sc-for>
+          </div>
+        </section>
+      </sc-if>
+      <div style="height:var(--sec)"></div>
+    </sc-if>
+
+    <sc-if value="{{ pProject }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Project" style="max-width:var(--maxw);margin:0 auto;padding:calc(var(--sec) * .5) var(--m) var(--sec);display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:28px">
+        <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:14px">
+          <span style="align-self:flex-start;font:600 11px var(--font);padding:3px 10px;border-radius:999px;background:#FFF0D6;color:#7A4B00">{{ L.demoContent }}</span>
+          <h1 style="margin:0;font:var(--wh1) var(--h1)/1.02 var(--font);letter-spacing:-.025em;color:var(--ink)">{{ proj.title }}</h1>
+          <p style="margin:0;font:400 calc(var(--body) * 1.1)/1.5 var(--font);color:var(--muted);max-width:38em">{{ proj.summary }}</p>
+        </div>
+        <div style="grid-column:1 / -1;position:relative">
+          <div onClick="{{ proj.onImg }}" style="position:relative;aspect-ratio:var(--projAR);border-radius:var(--r);background:repeating-linear-gradient(135deg,var(--surface) 0 14px,color-mix(in srgb,var(--surface),var(--ink) 5%) 14px 28px);cursor:{{ proj.cursor }};outline:{{ proj.outline }};outline-offset:4px">
+            <span style="position:absolute;inset-inline-start:16px;bottom:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PROJECT PHOTO — PLACEHOLDER</span>
+            <sc-if value="{{ hotspotsOn }}" hint-placeholder-val="{{ true }}">
+              <sc-for list="{{ proj.hotspots }}" as="h" hint-placeholder-count="2">
+                <button onClick="{{ h.toggle }}" aria-label="{{ h.aria }}" aria-expanded="{{ h.open }}" style="position:absolute;left:{{ h.left }};top:{{ h.top }};transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;border:0;background:{{ h.bg }};color:{{ h.fg }};font:400 24px/1 var(--font);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px color-mix(in srgb,var(--bg) 45%,transparent),0 6px 18px rgba(0,0,0,.18);z-index:2"><span style="display:block;transform:rotate({{ h.rot }});transition:transform .25s ease;margin-top:-2px">+</span></button>
+              </sc-for>
+              <sc-if value="{{ proj.popFloat }}" hint-placeholder-val="{{ false }}">
+                <div role="dialog" aria-label="{{ proj.pop.name }}" onClick="{{ stop }}" style="position:absolute;left:{{ proj.pop.left }};top:{{ proj.pop.top }};transform:{{ proj.pop.tf }};width:280px;background:var(--bg);border-radius:var(--r);box-shadow:0 12px 40px rgba(0,0,0,.18);border:1px solid var(--line);overflow:hidden;z-index:3;direction:ltr">
+                  <div style="aspect-ratio:16/9;background:repeating-linear-gradient(135deg,var(--surface) 0 10px,color-mix(in srgb,var(--surface),var(--ink) 5%) 10px 20px)"></div>
+                  <div style="padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><span style="font:var(--wh3) 17px/1.25 var(--font);color:var(--ink)">{{ proj.pop.name }}</span><button onClick="{{ proj.closePop }}" aria-label="Close" style="border:0;background:var(--surface);width:28px;height:28px;border-radius:50%;font:500 14px var(--font);color:var(--ink);flex:0 0 28px">×</button></div>
+                    <span style="font:500 13px var(--font);color:var(--muted)">{{ proj.pop.sub }}</span>
+                    <button onClick="{{ proj.pop.go }}" style="margin-top:6px;border:0;background:var(--primary);color:var(--onp);padding:10px 16px;border-radius:var(--rb);font:600 14px var(--font);min-height:44px">{{ L.viewProduct }} ↗</button>
+                  </div>
+                </div>
+              </sc-if>
+            </sc-if>
+          </div>
+          <sc-if value="{{ proj.popSheet }}" hint-placeholder-val="{{ false }}">
+            <div role="dialog" aria-label="{{ proj.pop.name }}" style="margin-top:12px;background:var(--bg);border-radius:var(--r);box-shadow:0 -4px 30px rgba(0,0,0,.12);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:8px">
+              <div style="width:36px;height:4px;border-radius:2px;background:var(--line);align-self:center"></div>
+              <div style="display:flex;gap:12px;align-items:center">
+                <div style="width:64px;height:64px;flex:0 0 64px;border-radius:10px;background:var(--surface)"></div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font:var(--wh3) 17px var(--font);color:var(--ink)">{{ proj.pop.name }}</span><span style="font:500 13px var(--font);color:var(--muted)">{{ proj.pop.sub }}</span></div>
+                <button onClick="{{ proj.closePop }}" aria-label="Close" style="border:0;background:var(--surface);width:36px;height:36px;border-radius:50%;font:500 16px var(--font)">×</button>
+              </div>
+              <button onClick="{{ proj.pop.go }}" style="border:0;background:var(--primary);color:var(--onp);padding:12px 16px;border-radius:var(--rb);font:600 15px var(--font);min-height:48px">{{ L.viewProduct }} ↗</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ proj.editing }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:10px;font:500 13px Heebo;color:#4A2770;background:#FAF5FF;border:1.5px dashed #C9A2E8;border-radius:10px;padding:10px 14px">Authoring: click anywhere on the photo to place a hotspot for “{{ proj.editName }}”.</div>
+          </sc-if>
+        </div>
+        <h2 style="grid-column:1 / -1;margin:24px 0 0;font:var(--wh2) calc(var(--h2) * .8)/1.15 var(--font);letter-spacing:-.015em;color:var(--ink)">{{ L.productsInProject }}</h2>
+        <sc-for list="{{ proj.products }}" as="p" hint-placeholder-count="2">
+          <button onClick="{{ p.go }}" style="grid-column:var(--sp3);display:flex;align-items:center;gap:14px;text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:14px;min-height:64px;cursor:pointer;transition:border-color 160ms" style-hover="border-color:var(--primary)">
+            <span style="width:56px;height:56px;flex:0 0 56px;border-radius:10px;background:var(--surface)"></span>
+            <span style="flex:1;font:var(--wh3) 16px var(--font);color:var(--ink)">{{ p.name }}</span>
+            <span style="color:var(--primary);font:600 16px var(--font)">{{ arrow }}</span>
+          </button>
+        </sc-for>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ pMedical }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Medical catalog" style="max-width:var(--maxw);margin:0 auto;padding:calc(var(--sec) * .6) var(--m) var(--sec);display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:24px">
+        <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:14px">
+          <h1 style="margin:0;font:var(--wh1) var(--h1)/1.02 var(--font);letter-spacing:-.025em;color:var(--ink)">{{ L.medicalCatalog }}</h1>
+          <p style="margin:0;font:400 calc(var(--body) * 1.1)/1.5 var(--font);color:var(--muted)">{{ L.medSub }}</p>
+        </div>
+        <div style="grid-column:1 / -1;border-radius:var(--r);background:var(--surface);padding:64px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+          <span style="width:48px;height:48px;border-radius:50%;background:var(--accent)"></span>
+          <span style="font:var(--wh3) var(--h3) var(--font);color:var(--ink)">{{ L.medEmpty }}</span>
+          <span style="font:400 15px var(--font);color:var(--muted);max-width:30em">{{ L.medEmptySub }}</span>
+          <button onClick="{{ goIndustrial }}" style="margin-top:8px;border:0;background:var(--primary);color:var(--onp);padding:12px 22px;border-radius:var(--rb);font:600 15px var(--font);min-height:48px">{{ L.exploreIndustrial }}</button>
+        </div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ pDemo }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Demo" style="max-width:var(--maxw);margin:0 auto;padding:calc(var(--sec) * .6) var(--m) var(--sec);display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:24px">
+        <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:14px">
+          <span style="align-self:flex-start;font:600 11px var(--font);padding:3px 10px;border-radius:999px;background:#FFF0D6;color:#7A4B00">DEMO MODE · FICTIONAL DATA</span>
+          <h1 style="margin:0;font:var(--wh1) var(--h1)/1.02 var(--font);letter-spacing:-.025em;color:var(--ink)">Sales demo</h1>
+          <p style="margin:0;font:400 calc(var(--body) * 1.1)/1.5 var(--font);color:var(--muted);max-width:36em">Switch how the catalog behaves for different visitors. Prices here are invented for demonstration and are not MEDIKUP commercial terms.</p>
+        </div>
+        <sc-for list="{{ demoRows }}" as="r" hint-placeholder-count="4">
+          <div style="grid-column:var(--sp2);display:flex;flex-direction:column;gap:10px;padding:20px;border:1px solid var(--line);border-radius:var(--r)">
+            <span style="font:var(--wh3) 16px var(--font);color:var(--ink)">{{ r.label }}</span>
+            <div style="display:flex;gap:2px;padding:3px;background:var(--surface);border-radius:var(--rb)">
+              <sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="3">
+                <button onClick="{{ o.go }}" style="white-space:nowrap;flex:0 0 auto;flex:1;border:0;padding:10px 0;border-radius:var(--rb);font:500 14px var(--font);background:{{ o.bg }};color:{{ o.fg }};box-shadow:{{ o.sh }};min-height:44px">{{ o.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <div style="grid-column:1 / -1"><button onClick="{{ goRavProduct }}" style="border:0;background:var(--primary);color:var(--onp);padding:14px 24px;border-radius:var(--rb);font:600 15px var(--font);min-height:48px">Open Tilt Bins with these settings</button></div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{ pBlocked }}" hint-placeholder-val="{{ false }}">
+      <section data-screen-label="Not available" style="max-width:var(--maxw);margin:0 auto;padding:calc(var(--sec) * 1.2) var(--m);display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px">
+        <span style="font:500 13px var(--font);letter-spacing:.1em;color:var(--muted)">404</span>
+        <h1 style="margin:0;font:var(--wh1) calc(var(--h1) * .7)/1.1 var(--font);color:var(--ink)">{{ L.blocked }}</h1>
+        <p style="margin:0;font:400 16px var(--font);color:var(--muted)">{{ blockedNote }}</p>
+        <button onClick="{{ goHome }}" style="margin-top:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:12px 22px;border-radius:var(--rb);font:600 15px var(--font);min-height:48px">{{ L.backHome }}</button>
+      </section>
+    </sc-if>
+
+    <footer style="border-top:1px solid var(--line);background:#fff">
+      <div style="max-width:var(--maxw);margin:0 auto;padding:40px var(--m);display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
+        <img src="assets/medikup-logo.svg" alt="MEDIKUP" style="height:22px;display:block">
+        <span style="font:400 13px var(--font);color:var(--muted)">{{ L.footer }}</span>
+      </div>
+    </footer>
+    <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ false }}">
+      <div style="position:sticky;bottom:0;z-index:35;background:#F6F8F9;border-top:1px solid var(--line);padding:10px var(--m) calc(10px + env(safe-area-inset-bottom))">
+        <div style="display:flex;gap:10px;align-items:center">
+          <sc-if value="{{ quoteOn }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ openQuote }}" style="flex:1;min-width:0;height:52px;border:0;border-radius:var(--rb);background:var(--accent);color:#fff;font:600 16px var(--font);cursor:pointer">{{ L.requestQuote }}</button>
+          </sc-if>
+          <button onClick="{{ sharePage }}" aria-label="{{ shareAria }}" style="flex:0 0 52px;width:52px;height:52px;border:1.5px solid var(--accent);border-radius:var(--rb);background:var(--bg);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-inline-start:{{ shareMs }}">
+            <sc-if value="{{ true }}" hint-placeholder-val="{{ true }}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4"></path><path d="M15.4 6.5l-6.8 4"></path></svg></sc-if>
+          </button>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</main>
+</div>
+
+
+
+
+
+<sc-if value="{{ importOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeImport }}" style="position:fixed;inset:0;z-index:100;background:rgba(20,26,30,.36);display:flex;align-items:center;justify-content:center;padding:20px">
+    <div role="dialog" aria-label="Import theme" onClick="{{ stop }}" style="width:min(560px,100%);background:#fff;border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:12px">
+      <strong style="font:700 18px Heebo">Import theme JSON</strong>
+      <textarea ref="{{ importRef }}" rows="12" placeholder="Paste an exported MEDIKUP theme file" style="font:400 12px/1.5 ui-monospace,monospace;padding:12px;border:1px solid #E3E6E9;border-radius:10px;resize:vertical"></textarea>
+      <sc-if value="{{ importErr }}" hint-placeholder-val="{{ false }}"><span style="font:500 13px Heebo;color:#B42318">{{ importErrText }}</span></sc-if>
+      <div style="display:flex;gap:8px;justify-content:flex-end"><button onClick="{{ closeImport }}" style="border:1px solid #E3E6E9;background:#fff;padding:9px 16px;border-radius:8px;font:500 14px Heebo">Cancel</button><button onClick="{{ applyImport }}" style="border:0;background:#1D2327;color:#fff;padding:9px 16px;border-radius:8px;font:600 14px Heebo">Apply to draft</button></div>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const KEY = 'medikup-proto-v1';
+const DEF_THEME = { primary:'#006197', accent:'#00AEA9', ink:'#1D2327', muted:'#5B6770', bg:'#FFFFFF', surface:'#F4F6F7', line:'#E2E6E9', font:'Heebo', wH1:800, wH2:700, wH3:600, radius:16, btn:'rounded', shadow:'soft', density:'regular' };
+const PRESETS = [
+  { name:'MEDIKUP', t:{ primary:'#006197', accent:'#00AEA9', ink:'#1D2327', muted:'#5B6770', bg:'#FFFFFF', surface:'#F4F6F7', line:'#E2E6E9' } },
+  { name:'Teal lead', t:{ primary:'#00807C', accent:'#006197', ink:'#14201F', muted:'#55635F', bg:'#FFFFFF', surface:'#F1F6F5', line:'#DDE6E4' } },
+  { name:'Graphite', t:{ primary:'#1D2327', accent:'#00AEA9', ink:'#15191C', muted:'#5B6770', bg:'#FAFAFA', surface:'#F0F1F2', line:'#E1E3E5' } }
+];
+const COLOR_KEYS = [['primary','Primary'],['accent','Accent'],['ink','Text'],['muted','Secondary text'],['bg','Background'],['surface','Surface'],['line','Borders']];
+const FLAGS = [
+  { id:'industrial', label:'Industrial catalog', g:'Catalogs', d:'public' },
+  { id:'medical', label:'Medical catalog', g:'Catalogs', d:'off' },
+  { id:'projects', label:'Projects', g:'Pages', d:'public' },
+  { id:'hotspots', label:'Project hotspots', g:'Pages', d:'public' },
+  { id:'demo', label:'Demo page', g:'Pages', d:'private' },
+  { id:'testimonials', label:'Testimonials', g:'Pages', d:'off', future:true },
+  { id:'hebrew', label:'Language switcher (HE / EN)', g:'Features', d:'private' },
+  { id:'units', label:'Unit converter', g:'Features', d:'public' },
+  { id:'quote', label:'Quote request', g:'Features', d:'private' },
+  { id:'prices', label:'Prices (fictional demo data)', g:'Features', d:'off' },
+  { id:'pdf', label:'PDF downloads', g:'Features', d:'public' },
+  { id:'dwg', label:'DWG downloads', g:'Features', d:'public' },
+  { id:'login', label:'Customer login / pricing', g:'Future', d:'off', future:true },
+  { id:'shop', label:'Online shop', g:'Future', d:'off', future:true }
+];
+const DEVICES = {
+  Desktop:{ w:1440, m:80, g:24, cols:12, h1:64, h2:40, h3:22, body:17, sec:112, sp2:'span 6', sp3:'span 4', sp4:'span 3', spA:'1 / span 7', spB:'8 / span 5', heroT:'1 / span 6', heroI:'7 / span 6', fImgA:'1 / span 7', fTxtA:'9 / span 4', fImgB:'6 / span 7', fTxtB:'1 / span 4', ar:'16/9' },
+  Tablet:{ w:834, m:40, g:20, cols:6, h1:50, h2:34, h3:20, body:16, sec:88, sp2:'span 3', sp3:'span 3', sp4:'span 2', spA:'1 / -1', spB:'1 / -1', heroT:'1 / -1', heroI:'1 / -1', fImgA:'1 / span 6', fTxtA:'1 / span 5', fImgB:'1 / span 6', fTxtB:'1 / span 5', ar:'4/3' },
+  Mobile:{ w:390, m:20, g:16, cols:6, h1:38, h2:28, h3:19, body:16, sec:64, sp2:'1 / -1', sp3:'1 / -1', sp4:'span 3', spA:'1 / -1', spB:'1 / -1', heroT:'1 / -1', heroI:'1 / -1', fImgA:'1 / -1', fTxtA:'1 / -1', fImgB:'1 / -1', fTxtB:'1 / -1', ar:'3/4' }
+};
+const RAV = [
+  { n:2, sku:'2020', w:60.1, h:35.3, d:31, ml:14200, kg:10 },
+  { n:3, sku:'2030', w:60.1, h:23.8, d:19.8, ml:4222, kg:5 },
+  { n:4, sku:'2040', w:60.1, h:20.6, d:17.15, ml:2144, kg:3.8 },
+  { n:5, sku:'2050', w:60.1, h:16.3, d:13.6, ml:1037, kg:2 },
+  { n:6, sku:'2060', w:60.1, h:11.25, d:9.4, ml:369, kg:0.9 },
+  { n:9, sku:'2090', w:60.1, h:7.65, d:6.45, ml:100, kg:null }
+].map(v => ({ ...v, img:'assets/tilt-bin-v2-' + v.n + '.png' + (v.n === 5 ? '?v=2' : ''), diagram:'assets/vec-tilt-bin-' + v.n + '.svg', vis:(v.w + 0.586 * v.d) / v.w }));
+const DIM = {"2":{"E":[70.47,198.76],"D":[272.02,311.44],"C":[350.54,267.34],"B":[350.54,156.36]},"3":{"E":[64.14,178.39],"D":[292.19,306.08],"C":[351.21,272.94],"B":[351.21,189.53]},"4":{"E":[60.3,155.24],"D":[304.36,292.01],"C":[351.64,265.46],"B":[351.64,198.64]},"5":{"E":[57.83,144.33],"D":[312.42,287.07],"C":[351.83,264.94],"B":[351.83,209.24]},"6":{"E":[55.96,136.51],"D":[318.26,283.62],"C":[352.08,264.63],"B":[352.08,216.84]},"9":{"E":[52.77,122.45],"D":[328.64,277.26],"C":[352.32,263.96],"B":[352.32,230.49]}};
+function dimSvg(n, L) {
+  const g = DIM[n]; if (!g) return null;
+  const h = React.createElement, OFF = 20, TK = 5, LAB = 13, out = [];
+  const dim = (P, Q, nx, ny, label, key) => {
+    const a = [P[0] + nx * OFF, P[1] + ny * OFF], b = [Q[0] + nx * OFF, Q[1] + ny * OFF];
+    let ang = Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI; if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
+    out.push(h('line', { key:key + 'l', x1:a[0], y1:a[1], x2:b[0], y2:b[1] }));
+    [a, b].forEach((p, i) => out.push(h('line', { key:key + 't' + i, x1:p[0] - nx * TK, y1:p[1] - ny * TK, x2:p[0] + nx * TK, y2:p[1] + ny * TK })));
+    const m = [(a[0] + b[0]) / 2 + nx * LAB, (a[1] + b[1]) / 2 + ny * LAB];
+    out.push(h('text', { key:key + 'x', x:m[0], y:m[1], transform:'rotate(' + ang.toFixed(1) + ' ' + m[0].toFixed(1) + ' ' + m[1].toFixed(1) + ')', textAnchor:'middle', dominantBaseline:'middle', stroke:'none', fill:'currentColor', style:{ font:'600 13px var(--font)' } }, label));
+  };
+  const unit = (P, Q) => { const dx = Q[0] - P[0], dy = Q[1] - P[1], l = Math.hypot(dx, dy); return [dx / l, dy / l]; };
+  const u = unit(g.E, g.D); dim(g.E, g.D, -u[1], u[0], L.width, 'w');
+  const v = unit(g.D, g.C); dim(g.D, g.C, -v[1], v[0], L.depth, 'd');
+  dim(g.C, g.B, 1, 0, L.height, 'h');
+  return h('svg', { viewBox:'-10 0 418 380', 'aria-hidden':true, style:{ position:'absolute', inset:0, width:'100%', height:'100%', overflow:'visible', color:'var(--ink)', stroke:'currentColor', strokeWidth:1, fill:'none' } }, out);
+}
+const AR = { 2:'1102/835', 3:'1321/791', 4:'1531/813', 5:'1563/747', 6:'1821/681', 9:'2091/695' };
+const VIS_MAX = Math.max(...RAV.map(v => v.vis));
+RAV.forEach(v => { v.name = { en:'Tilt Bin ' + v.n, he:'רב תא ' + v.n }; });
+const DEMO_PRICE = { '2020':48, '2030':39, '2040':32, '2050':27, '2060':19, '2090':14 };
+const SYS = [
+  ['deluxe','DELUXE Sliding Tilt Bin Unit','תא נע DELUXE','derived'],
+  ['smart','SMART Sliding Tilt Bin Unit','תא נע SMART','derived'],
+  ['high-shutter','Tilt Bin High Shutter Cabinet','ארון תריס רב תא גבוה','derived'],
+  ['classic','Tilt Bin Classic Cabinet','ארון רב תא קלאסי','derived'],
+  ['classic-lock','Tilt Bin Classic Cabinet, Lockable','ארון רב תא קלאסי נעול','derived'],
+  ['partition-200','EXCLUSIVE Storage Partition 200','מחיצת EXCLUSIVE 200','compatible'],
+  ['exclusive-cart','EXCLUSIVE Double-Sided Cart','עגלת EXCLUSIVE דו צדדית','compatible'],
+  ['cart-120','Double-Sided Cart 120','עגלה דו צדדית 120','compatible'],
+  ['stand-4-180','Four-Sided Stand 180','מעמד 4 דפנות 180','compatible'],
+  ['stand-1','Single-Sided Stand','מעמד חד צדדי','compatible'],
+  ['wall-rail','Wall Rail','מתלה קיר','compatible']
+];
+const PRODUCTS = {
+  'rav-ta': { id:'rav-ta', fam:'rav-ta', name:{ en:'Tilt Bins', he:'ארגזי רב תא' },
+    desc:{ en:'Light-grey housing with clear tilt-out bins, in six sizes. Every size is 60.1 cm wide; height and depth step down from Tilt Bin 2 to Tilt Bin 9.', he:'גוף אפור בהיר עם תאים שקופים נפתחים, בשישה גדלים. כל הגדלים ברוחב 60.1 ס״מ; הגובה והעומק קטנים מרב תא 2 ועד רב תא 9.' },
+    color:{ en:'Light grey · RAL 7035', he:'אפור בהיר · RAL 7035' },
+    variants: RAV.map(v => ({ ...v, name:{ en:'Tilt Bin ' + v.n, he:'רב תא ' + v.n } })),
+    features:[
+      { title:{ en:'Dust-proof', he:'אטום לאבק' }, body:{ en:'Closed bins keep dust and dirt away from the stored contents.', he:'התאים הסגורים שומרים על התכולה מפני אבק ולכלוך.' }, img:'assets/feat-dustproof.png', ic:'assets/ic-dust-proof.svg' },
+      { title:{ en:'Locking bar', he:'מנגנון נעילה' }, body:{ en:'A metal bar runs across the front of the unit and holds every bin closed, so contents stay put when the unit is moved.', he:'מוט מתכת לרוחב חזית היחידה נועל את כל התאים במצב סגור, כך שהתכולה נשארת במקומה גם בהזזה.' }, img:'assets/feat-lock-bar.png', ic:'assets/ic-lock.svg' },
+      { title:{ en:'Wall mounting', he:'תלייה על קיר' }, body:{ en:'Keyhole slots on the back panel let the unit hang directly on a wall, vertically or horizontally.', he:'חורי תלייה בגב היחידה מאפשרים לתלות אותה ישירות על הקיר, לאורך או לרוחב.' }, img:'assets/feat-wall-mount.png', ic:'assets/ic-wall-mount-v2.svg' },
+      { title:{ en:'Stackable', he:'העמסה זה על זה' }, body:{ en:'Units stack securely on top of one another, so storage grows upward without extra floor or wall space.', he:'היחידות נערמות בבטחה זו על גבי זו, כך שאפשר להרחיב את האחסון כלפי מעלה בלי שטח רצפה או קיר נוסף.' }, img:'assets/feat-stacking.png', ic:'assets/ic-stackable.svg' }
+    ],
+    projects:['p1'] }
+};
+const SYS_DIM = { 'stand-low':{ w:600, h:1200 }, 'stand-high':{ w:600, h:2000 }, 'cart-120':{ w:600, h:1300 }, 'stand-4-180':{ w:800, h:2000, d:800 }, 'smart':{ w:1400, h:2200, d:650 } };
+const SYS_FEAT = { 'smart':[
+  { title:{ en:'Sliding front panels', he:'חזיתות נעות' }, body:{ en:'Front tilt-bin panels slide sideways to reach a second row behind — more bins on the same footprint.', he:'חזיתות רב התאים נעות הצידה וחושפות שורה נוספת מאחור — יותר תאים על אותו שטח רצפה.' }, img:'assets/smart-feat-sliding.png' },
+  { title:{ en:'Clear tilt-out bins', he:'תאים שקופים נפתחים' }, body:{ en:'Transparent bins show what is inside at a glance and tilt out for easy picking.', he:'התאים השקופים מראים את התכולה במבט אחד ונפתחים בהטיה לשליפה נוחה.' }, img:'assets/smart-feat-bins.png' },
+  { title:{ en:'Steel frame', he:'שלד פלדה' }, body:{ en:'Bolted blue steel frame with top and bottom guide rails.', he:'שלד פלדה כחול מוברג, עם מסילות הובלה עליונה ותחתונה.' }, img:'assets/smart-feat-frame.png' },
+  { title:{ en:'Levelling feet', he:'רגליות פילוס' }, body:{ en:'Adjustable feet keep the unit stable and level on uneven floors.', he:'רגליות מתכווננות שומרות על המתקן יציב ומפולס גם על רצפה לא ישרה.' }, img:'assets/smart-feat-foot.png' }
+] };
+const SYS_GAL = { 'deluxe-4':['assets/deluxe-4-open.png','assets/deluxe-4-stocked.png','assets/deluxe-4-closed.png','assets/deluxe-4-half-open.png','assets/deluxe-4-half-open-2.png'], 'deluxe-7':['assets/deluxe-7-empty.png','assets/deluxe-7-stocked.png'], 'deluxe-10':['assets/deluxe-10-open.png','assets/deluxe-10-stocked.png','assets/deluxe-10-open-2.png','assets/deluxe-10-stocked-2.png','assets/deluxe-10-closed.png','assets/deluxe-10-1door.png','assets/deluxe-10-1door-stocked.png','assets/deluxe-10-2doors.png','assets/deluxe-10-2doors-stocked-2.png','assets/deluxe-10-2doors-stocked-3.png','assets/deluxe-10-2doors-stocked-4.png'], 'smart':['assets/smart-4-empty.png','assets/smart-4-stocked.png','assets/smart-4-lego.png'], 'high-shutter':['assets/cabinet-front-5.png','assets/cabinet-front-5-stocked.png','assets/cabinet-closed.png','assets/cabinet-front-mixed.png','assets/cabinet-back-5.png','assets/cabinet-back-5-stocked.png'], 'partition-200':['assets/partition-200-x3.png','assets/partition-200-x3-stocked.png','assets/partition-200-x2.png','assets/partition-200-x2-stocked.png','assets/partition-200-x4.png','assets/partition-200-x4-car.png','assets/partition-200-x4-beauty.png'], 'exclusive-cart':['assets/cart-exclusive.png','assets/cart-exclusive-stocked.png'], 'cart-120':['assets/cart-2-wheels.png','assets/cart-2-wheels-stocked.png'], 'stand-4-180':['assets/stand-4-wheels.png','assets/stand-4-wheels-candy.png','assets/stand-4-wheels-open.png'], 'stand-low':['assets/stand-1-legs.png','assets/stand-1-legs-stocked.png','assets/stand-1-wheels.png','assets/stand-1-wheels-stocked.png'], 'stand-high':['assets/stand-180.png','assets/stand-180-stocked.png','assets/stand-180-opt2.png','assets/stand-180-opt2-medical.png'], 'stand-200':['assets/stand-200-wheels.png','assets/stand-200-wheels-stocked.png'], 'wall-rail-60':['assets/wall-rail-60-empty.png','assets/wall-rail-60-stocked.png'], 'wall-rail-120':['assets/wall-rail-120.png','assets/wall-rail-120-stocked.png'], 'wall-rail-200':['assets/wall-rail-200.png','assets/wall-rail-200-stocked.png'] };
+const SYS_OPTS = {
+  'deluxe':{ opts:[{ k:'wings', label:{ en:'Doors', he:'כנפיים' }, vals:[{ v:'4', label:{ en:'4 doors', he:'4 כנפיים' } }, { v:'7', label:{ en:'7 doors', he:'7 כנפיים' } }, { v:'10', label:{ en:'10 doors', he:'10 כנפיים' } }] }, { k:'front', label:{ en:'Front', he:'חזית' }, vals:[{ v:'open', label:{ en:'Without doors', he:'ללא דלתות' } }, { v:'doors', label:{ en:'With doors', he:'עם דלתות' } }] }],
+    combos:[{ sel:{ wings:'4', front:'open' }, gal:['assets/deluxe-4-open.png','assets/deluxe-4-stocked.png'] }, { sel:{ wings:'4', front:'doors' }, gal:['assets/deluxe-4-closed.png','assets/deluxe-4-half-open.png','assets/deluxe-4-half-open-2.png'] }, { sel:{ wings:'7', front:'open' }, gal:['assets/deluxe-7-empty.png','assets/deluxe-7-stocked.png'] }, { sel:{ wings:'10', front:'open' }, gal:['assets/deluxe-10-open.png','assets/deluxe-10-stocked.png','assets/deluxe-10-open-2.png','assets/deluxe-10-stocked-2.png'] }, { sel:{ wings:'10', front:'doors' }, gal:['assets/deluxe-10-closed.png','assets/deluxe-10-1door.png','assets/deluxe-10-1door-stocked.png','assets/deluxe-10-2doors.png','assets/deluxe-10-2doors-stocked-2.png','assets/deluxe-10-2doors-stocked-3.png','assets/deluxe-10-2doors-stocked-4.png'] }] },
+  'stand-1':{ opts:[{ k:'h', label:{ en:'Height', he:'גובה' }, vals:[{ v:'116', label:{ en:'116 cm', he:'116 ס״מ' } }, { v:'180', label:{ en:'180 cm', he:'180 ס״מ' } }, { v:'200', label:{ en:'200 cm', he:'200 ס״מ' } }] }, { k:'base', label:{ en:'Base', he:'בסיס' }, vals:[{ v:'legs', label:{ en:'Legs', he:'רגליים' } }, { v:'wheels', label:{ en:'Castors', he:'גלגלים' } }] }],
+    combos:[{ sel:{ h:'116', base:'legs' }, gal:['assets/stand-1-legs.png','assets/stand-1-legs-stocked.png'] }, { sel:{ h:'116', base:'wheels' }, gal:['assets/stand-1-wheels.png','assets/stand-1-wheels-stocked.png'] }, { sel:{ h:'180', base:'legs' }, gal:['assets/stand-180.png','assets/stand-180-stocked.png','assets/stand-180-opt2.png','assets/stand-180-opt2-medical.png'] }, { sel:{ h:'200', base:'wheels' }, gal:['assets/stand-200-wheels.png','assets/stand-200-wheels-stocked.png'] }] },
+  'wall-rail':{ opts:[{ k:'w', label:{ en:'Size', he:'גודל' }, vals:[{ v:'60', label:{ en:'60 cm', he:'60 ס״מ' } }, { v:'120', label:{ en:'120 cm', he:'120 ס״מ' } }, { v:'200', label:{ en:'200 cm', he:'200 ס״מ' } }] }],
+    combos:[{ sel:{ w:'60' }, gal:['assets/wall-rail-60-empty.png','assets/wall-rail-60-stocked.png'] }, { sel:{ w:'120' }, gal:['assets/wall-rail-120.png','assets/wall-rail-120-stocked.png'] }, { sel:{ w:'200' }, gal:['assets/wall-rail-200.png','assets/wall-rail-200-stocked.png'] }] },
+  'partition-200':{ opts:[{ k:'n', label:{ en:'Stands', he:'מעמדים' }, vals:[{ v:'2', label:{ en:'2 stands', he:'2 מעמדים' } }, { v:'3', label:{ en:'3 stands', he:'3 מעמדים' } }, { v:'4', label:{ en:'4 stands', he:'4 מעמדים' } }] }],
+    combos:[{ sel:{ n:'3' }, gal:['assets/partition-200-x3.png','assets/partition-200-x3-stocked.png'] }, { sel:{ n:'2' }, gal:['assets/partition-200-x2.png','assets/partition-200-x2-stocked.png'] }, { sel:{ n:'4' }, gal:['assets/partition-200-x4.png','assets/partition-200-x4-car.png','assets/partition-200-x4-beauty.png'] }] }
+};
+Object.keys(SYS_OPTS).forEach(k => { SYS_GAL[k] = SYS_OPTS[k].combos[0].gal; });
+const SYS_IMG = {}; Object.keys(SYS_GAL).forEach(k => { const g = SYS_GAL[k]; SYS_IMG[k] = g[1] || g[0]; });
+SYS.forEach(([id,en,he,rel]) => { PRODUCTS[id] = { opts:(SYS_OPTS[id] || {}).opts || null, combos:(SYS_OPTS[id] || {}).combos || null, img:SYS_IMG[id] || null, gallery:SYS_GAL[id] || null, features:SYS_FEAT[id] || [], dims:SYS_DIM[id] || null, color: id === 'smart' ? { en:'Blue', he:'כחול' } : { en:'Light grey', he:'אפור בהיר' }, id, fam:'rav-ta-systems', name:{ en, he }, pending:true, rel, basedOn: rel === 'derived' ? 'rav-ta' : null, projects: id === 'wall-rail-120' ? ['p1'] : [] }; });
+[['wall-rail-60','wall-rail',{ w:'60' }],['wall-rail-120','wall-rail',{ w:'120' }],['wall-rail-200','wall-rail',{ w:'200' }],['stand-low','stand-1',{ h:'116' }],['stand-high','stand-1',{ h:'180' }]].forEach(([o,n]) => { PRODUCTS[o] = { ...PRODUCTS[n], fam:null }; });
+[1,2,3,4].forEach(n => { PRODUCTS['picking-' + n] = { id:'picking-' + n, fam:'picking', name:{ en:'Picking Bin ' + n, he:'ארקלית ' + n }, img:'assets/picking-bin-' + n + '.png', gallery:['assets/picking-bin-' + n + '.png'], projects:[] }; });
+PRODUCTS['shutter-4'] = { id:'shutter-4', fam:'shutter', name:{ en:'Shutter Cabinet, 4 Shelves', he:'ארון תריס 4 מדפים' }, pending:true, projects:[] };
+const FAMILIES = [
+  { id:'rav-ta', name:{ en:'Tilt Bins', he:'רב תא' }, sub:{ en:'Modular storage units with clear tilt-out bins, in six sizes, all 60 cm wide.', he:'יחידות אחסון מודולריות עם תאים שקופים נפתחים, בשישה גדלים, כולם ברוחב 60 ס״מ.' }, media:'TILT BINS FAMILY PHOTO' },
+  { id:'rav-ta-systems', name:{ en:'Tilt Bin Cabinets & Stands', he:'ארונות ומעמדי רב תא' }, sub:{ en:'Systems listed in the product sheet. SKUs, dimensions and photos are still missing.', he:'מערכות מטבלת המוצרים. מק״טים, מידות ותמונות חסרים.' }, media:'CABINETS & STANDS PHOTO' },
+  { id:'picking', name:{ en:'Picking Bins', he:'ארקליות' }, sub:{ en:'Stackable open-front picking bins in four sizes.', he:'ארקליות פתוחות מלפנים, ניתנות להערמה, בארבעה גדלים.' }, media:'PICKING BINS PHOTO', img:'assets/picking-bins-cover.png' },
+  { id:'shutter', name:{ en:'Shutter Cabinets', he:'ארונות תריס' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'SHUTTER CABINET PHOTO' },
+  { id:'wire', name:{ en:'Wire Shelving', he:'מדפי רשת' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'WIRE SHELVING PHOTO' },
+  { id:'premium', name:{ en:'Premium Shelving (La Fortezza)', he:'מדפי פרימיום (לה פורטצה)' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'PREMIUM SHELVING PHOTO' }
+];
+const DEF_HOTSPOTS = [ { x:.3, y:.58, pid:'rav-ta', v:'2040' }, { x:.7, y:.36, pid:'wall-rail-120' } ];
+const UI = {
+  en:{ home:'Home', industrial:'Industrial', medical:'Medical', projects:'Projects', demo:'Demo', moreSizes:'More sizes', fullscreen:'Full screen', closeLabel:'Close', ravRails:'Systems, rails & stands', prev:'Previous size', next:'Next size', heroTitle:'Storage systems for industry and healthcare.', heroSub:'Multi-cell bins, cabinets, stands and shelving — in two catalogs, Industrial and Medical.', exploreIndustrial:'Explore the Industrial catalog', seeProject:'See a project', catalogs:'Catalogs', industrialCatalog:'Industrial Catalog', medicalCatalog:'Medical Catalog', indSub:'Browse by product family, or search by name or SKU.', search:'Search by name or SKU', noResults:'No products match that search.', dataPending:'Data pending', sku:'SKU', size:'Size', color:'Color', specs:'Specifications', unverified:'Dimensions pending verification', external:'External dimensions', internal:'Internal dimensions', width:'Width', height:'Height', depth:'Depth', allSizes:'Dimensions, all sizes', keyFeatures:'Key features', downloads:'Downloads', compatible:'Rails & stands with Tilt Bins', builtOn:'Systems built on Tilt Bins', basedOn:'Based on', pending:'Pending confirmation', relNote:'Relationship shown for structure only — compatibility not yet confirmed by MEDIKUP.', featuredProjects:'Featured projects', requestQuote:'Request a quote', share:'Copy link to this size', copied:'Link copied', viewProduct:'View product', demoContent:'PLACEHOLDER DEMO CONTENT', productsInProject:'Products in this project', medSub:'Same design system, separate catalog data.', medEmpty:'Medical products are on their way.', medEmptySub:'This catalog is set up and themed; product data hasn’t been added yet.', blocked:'This page isn’t available.', backHome:'Back to home', footer:'© MEDIKUP · Prototype', fallback:'Shown in English — translation pending.', lineupNote:'Front profiles drawn to scale from the source sheet (height × depth). Tap a size to open it.', infoTab:'Benefits', productsTab:'Single Tilt Bins', infoPending:'Info content coming next.', sharePage:'Share this page', menu:'Menu', closeMenu:'Close menu', language:'Language', units:'Units', comingSoon:'Coming soon', products:'products', sizes:'sizes', binWidth:'Single bin width', capacity:'Bin capacity', load:'Max load per bin', wholeUnit:'Product dimensions', perBin:'Single bin', illustrative:'Illustrative diagram — not a certified dimension drawing.', loadNone:'Not specified', loadNote:'* The legacy brochure lists no load limit for Tilt Bin 9. This is not a guaranteed rating — contact MEDIKUP for guidance.', u:{ cm:'cm', in:'in', ml:'mL', floz:'fl oz', kg:'kg', lb:'lb' } },
+  he:{ home:'בית', industrial:'תעשייה', medical:'רפואה', projects:'פרויקטים', demo:'דמו', moreSizes:'גדלים נוספים', fullscreen:'מסך מלא', closeLabel:'סגירה', ravRails:'מערכות, מתלים ומעמדים', prev:'הגודל הקודם', next:'הגודל הבא', heroTitle:'מערכות אחסון לתעשייה ולרפואה.', heroSub:'ארגזי רב תא, ארונות, מעמדים ומדפים — בשני קטלוגים: תעשייה ורפואה.', exploreIndustrial:'לקטלוג התעשייה', seeProject:'לפרויקט לדוגמה', catalogs:'קטלוגים', industrialCatalog:'קטלוג תעשייה', medicalCatalog:'קטלוג רפואה', indSub:'גלישה לפי משפחת מוצרים, או חיפוש לפי שם או מק״ט.', search:'חיפוש לפי שם או מק״ט', noResults:'לא נמצאו מוצרים.', dataPending:'נתונים בהשלמה', sku:'מק״ט', size:'גודל', color:'צבע', specs:'מפרט טכני', unverified:'מידות בבדיקה', external:'מידות חיצוניות', internal:'מידות פנימיות', width:'רוחב', height:'גובה', depth:'עומק', allSizes:'מידות כל הגדלים', keyFeatures:'מאפיינים עיקריים', downloads:'הורדות', compatible:'מתלים ומעמדים עם רבי תאים', builtOn:'מערכות מבוססות רב תא', basedOn:'מבוסס על', pending:'ממתין לאישור', relNote:'הקשר מוצג לצורך מבנה בלבד — התאימות טרם אושרה.', featuredProjects:'פרויקטים נבחרים', requestQuote:'בקשת הצעת מחיר', share:'העתקת קישור לגודל', copied:'הקישור הועתק', viewProduct:'לצפייה במוצר', demoContent:'תוכן דמו זמני', productsInProject:'מוצרים בפרויקט', medSub:'אותה מערכת עיצוב, נתוני קטלוג נפרדים.', medEmpty:'מוצרי הרפואה בדרך.', medEmptySub:'הקטלוג מוגדר ומעוצב; נתוני המוצרים טרם הוזנו.', blocked:'הדף אינו זמין.', backHome:'חזרה לדף הבית', footer:'© MEDIKUP · אב טיפוס', fallback:'מוצג באנגלית — תרגום בהשלמה.', lineupNote:'פרופילים קדמיים בקנה מידה לפי טבלת המקור (גובה × עומק). לחצו על גודל.', infoTab:'יתרונות', productsTab:'רבי תאים בודדים', infoPending:'תוכן המידע יתווסף בהמשך.', sharePage:'שיתוף העמוד', menu:'תפריט', closeMenu:'סגירת תפריט', language:'שפה', units:'יחידות מידה', comingSoon:'בקרוב', products:'מוצרים', sizes:'גדלים', binWidth:'רוחב תא בודד', capacity:'נפח תא', load:'עומס מרבי לתא', wholeUnit:'מידות המוצר', perBin:'תא בודד', illustrative:'איור להמחשה — אינו שרטוט מידות מאושר.', loadNone:'לא צוין', loadNote:'* בעלון המקורי לא צוינה מגבלת עומס לרב תא 9. אין לראות בכך דירוג עומס מובטח — לפרטים פנו ל-MEDIKUP.', u:{ cm:'ס״מ', in:'אינץ׳', ml:'מ״ל', floz:'fl oz', kg:'ק״ג', lb:'ליברה' } }
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+const hexLum = h => { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255].map(c => { c /= 255; return c <= .03928 ? c / 12.92 : Math.pow((c + .055) / 1.055, 2.4); }).reduce((a, c, i) => a + c * [.2126, .7152, .0722][i], 0); };
+const contrast = (a, b) => { const x = hexLum(a), y = hexLum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+const defFlags = () => Object.fromEntries(FLAGS.map(f => [f.id, f.d]));
+const defConfig = () => ({ theme:{ shared:clone(DEF_THEME), industrial:{}, medical:{} }, flags:defFlags() });
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    if (saved && !saved.btn8) { ['draft','published'].forEach(k => { const sh = saved[k]?.theme?.shared; if (sh && sh.btn === 'pill') sh.btn = 'rounded'; }); }
+    const h = this.parseHash();
+    this.hist = [];
+    this.importRef = React.createRef();
+    this.famScrollRef = el => {
+      const fresh = el && el !== this._fs; this._fs = el;
+      if (fresh) requestAnimationFrame(() => { if (!el.children.length) return; const step = el.children[0].offsetWidth + 12; const rtl = getComputedStyle(el).direction === 'rtl'; el.scrollLeft = (rtl ? -1 : 1) * this.state.famIdx * step; });
+    };
+    this.famOnScroll = () => { const el = this._fs; if (!el || !el.children.length) return; const c = el.children[0]; const step = c.offsetWidth + 12; const i = Math.max(0, Math.min(el.children.length - 1, Math.round(Math.abs(el.scrollLeft) / step))); if (i !== this.state.famIdx) this.setState({ famIdx: i }); };
+    this.famGoTo = i => { const el = this._fs; this.setState({ famIdx: i }); if (!el || !el.children.length) return; const step = el.children[0].offsetWidth + 12; const rtl = getComputedStyle(el).direction === 'rtl'; el.scrollTo({ left: (rtl ? -1 : 1) * i * step, behavior: 'smooth' }); };
+    this.pScrollRef = el => { const fresh = el && el !== this._ps; this._ps = el; if (fresh) requestAnimationFrame(() => this.pScrollTo(false)); };
+    this.pEl = () => { const l = document.querySelectorAll('[data-pscroll]'); for (const e of l) if (e.isConnected && e.offsetWidth) return e; return null; };
+    this.pScrollTo = smooth => { const el = this.pEl(); if (!el || !el.children.length) return; const r = this.state.route; const vs = (PRODUCTS[r.id] || {}).variants || []; const i = Math.max(0, vs.findIndex(v => v.sku === r.v)); const step = el.children[0].offsetWidth + 20; const max = el.scrollWidth - el.clientWidth; const rtl = getComputedStyle(el).direction === 'rtl'; this._pLock = true; el.scrollTo({ left:(rtl ? -1 : 1) * Math.min(max, i * step), behavior:smooth ? 'smooth' : 'auto' }); clearTimeout(this._pLockT); this._pLockT = setTimeout(() => { this._pLock = false; }, smooth ? 600 : 80); };
+    this.pOnScroll = ev => { const tgt = ev && ev.currentTarget; if (this._pLock) return; clearTimeout(this._pT); this._pT = setTimeout(() => { const el = (tgt && tgt.isConnected) ? tgt : this.pEl(); if (!el || !el.children.length) return; const r = this.state.route; const vs = (PRODUCTS[r.id] || {}).variants || []; const step = el.children[0].offsetWidth + 20; const x = Math.abs(el.scrollLeft); const max = el.scrollWidth - el.clientWidth; const i = x >= max - 2 ? vs.length - 1 : Math.max(0, Math.min(vs.length - 1, Math.round(x / step))); const v = vs[i]; const curSku = r.v || (vs[0] && vs[0].sku); if (v && v.sku !== curSku) { this._pSwipe = true; const nr = { ...r, v:v.sku }; this.setState({ route:nr, thumb:0 }); try { history.replaceState(null, '', '#' + (this.state.site ? 'site' : '') + this.routeHash(nr)); } catch (e) {} } }, 120); };
+    this.canvasRef = el => {
+      if (el === this._cv) return;
+      if (this._ro) this._ro.disconnect();
+      this._cv = el;
+      if (el) { this._ro = new ResizeObserver(() => this.setState({ cw: el.clientWidth })); this._ro.observe(el); }
+    };
+    this.state = {
+      draft: saved?.draft || defConfig(), published: saved?.published || defConfig(),
+      hotspots: saved?.hotspots || clone(DEF_HOTSPOTS),
+      site: h.site, route: h.route, device: saved?.device || 'Desktop', viewAs: 'admin', grid: false, tab: 'theme', scope: 'shared',
+      lang: 'he', unit: null, assume: 'mm', sampleFiles: false, query: '', menu: false, thumb: 0, copied: false,
+      pop: null, hsEdit: false, hsProduct: 'rav-ta', quote: null, importOpen: false, importErr: '',
+      demo: { customer: 'standard' }, cw: 1200, famTab: 'products', famIdx: 0
+    };
+  }
+  parseHash() {
+    const raw = (location.hash || '').replace(/^#/, '');
+    const site = true;
+    const p = raw.replace(/^site/, '').split('/').filter(Boolean);
+    let route = { page: 'home' };
+    if (p[0] === 'industrial') route = { page: 'industrial' };
+    else if (p[0] === 'family' && p[1]) route = { page: 'family', id: p[1] };
+    else if (p[0] === 'product' && p[1]) route = { page: 'product', id: p[1], v: p[2] || null };
+    else if (p[0] === 'project') route = { page: 'project', id: p[1] || 'p1' };
+    else if (p[0] === 'medical') route = { page: 'medical' };
+    else if (p[0] === 'demo') route = { page: 'demo' };
+    return { site, route };
+  }
+  routeHash(r) { r = r || this.state.route; return '/' + [r.page === 'home' ? '' : r.page, r.id, r.v].filter(Boolean).join('/'); }
+  componentDidMount() {
+    this._onKey = e => { if (e.key === 'Escape') this.setState({ pop: null, menu: false, quote: null, importOpen: false, shareOpen: false, lb: null }); };
+    this._onRes = () => this.forceUpdate();
+    window.addEventListener('keydown', this._onKey);
+    window.addEventListener('resize', this._onRes);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this._onKey); window.removeEventListener('resize', this._onRes); if (this._ro) this._ro.disconnect(); }
+  persist(patch) {
+    const s = { ...this.state, ...patch };
+    try { localStorage.setItem(KEY, JSON.stringify({ btn8: true, draft: s.draft, published: s.published, hotspots: s.hotspots, device: s.device })); } catch (e) {}
+  }
+  commit(draft) { this.hist.push(this.state.draft); if (this.hist.length > 80) this.hist.shift(); this.setState({ draft }); this.persist({ draft }); }
+  go(route) {
+    this.setState({ route, menu: false, pop: null, thumb: 0, copied: false });
+    try { history.replaceState(null, '', '#' + this.routeHash(route)); } catch (e) {}
+    const top = () => { if (this._cv) this._cv.scrollTop = 0; window.scrollTo(0, 0); if (document.scrollingElement) document.scrollingElement.scrollTop = 0; };
+    top(); requestAnimationFrame(top);
+    if (route.page === 'product') setTimeout(() => this.pScrollTo(true), 60);
+  }
+  componentDidUpdate(pp, ps) { const a = ps.route || {}, b = this.state.route || {}; if (a.page === 'product' && b.page === 'product' && a.id === b.id && a.v !== b.v) { if (this._pSwipe) this._pSwipe = false; else this.pScrollTo(true); } }
+  get cfg() { return this.state.site ? this.state.published : this.state.draft; }
+  get viewAs() { return this.state.site ? 'public' : this.state.viewAs; }
+  comboOf(p) { const s = this.state; const sel = s.osel && s.osel.id === p.id ? s.osel.sel : null; return (sel && p.combos.find(c => Object.keys(c.sel).every(k => c.sel[k] === sel[k]))) || p.combos[0]; }
+  pickOpt(p, k, v) { const cur = this.comboOf(p).sel; const want = { ...cur, [k]:v }; const c = p.combos.find(x => Object.keys(x.sel).every(q => x.sel[q] === want[q])) || p.combos.find(x => x.sel[k] === v); if (c) this.setState({ osel:{ id:p.id, sel:c.sel } }); }
+  vis(id) { const s = this.cfg.flags[id]; return s === 'public' || (s === 'private' && this.viewAs === 'admin'); }
+  isPriv(id) { return this.cfg.flags[id] === 'private'; }
+  get touch() { return this.device !== 'Desktop'; }
+  get device() {
+    if (!this.state.site) return this.state.device;
+    const w = window.innerWidth; return w <= 560 ? 'Mobile' : w <= 1024 ? 'Tablet' : 'Desktop';
+  }
+  themeFor(cat) { const t = this.cfg.theme; return { ...t.shared, ...(cat ? t[cat] : {}) }; }
+  seg(opts, cur, set, dark) {
+    return opts.map(o => { const v = typeof o === 'object' ? o.v : o; const label = typeof o === 'object' ? o.label : o; const on = v === cur;
+      return { label, on, go: () => set(v), bg: on ? (dark ? 'var(--ink)' : '#fff') : 'transparent', fg: on ? (dark ? 'var(--bg)' : '#1D2327') : (dark ? 'var(--muted)' : '#5B6770'), sh: on && !dark ? '0 1px 3px rgba(0,0,0,.12)' : 'none' }; });
+  }
+  num(x, max) { return x.toLocaleString(this.lang === 'he' ? 'he-IL' : 'en-US', { maximumFractionDigits: max ?? 2 }); }
+  len(cm) { const U = UI[this.lang].u; const src = this.num(cm) + ' ' + U.cm; return this.unit === 'imperial' ? { v: this.num(cm / 2.54) + ' ' + U.in, alt: src } : { v: src, alt: '' }; }
+  vol(ml) { const U = UI[this.lang].u; const src = this.num(ml) + ' ' + U.ml; return this.unit === 'imperial' ? { v: this.num(ml / 29.5735, 1) + ' ' + U.floz, alt: src } : { v: src, alt: '' }; }
+  load(kg) { const U = UI[this.lang].u; if (kg == null) return { v: UI[this.lang].loadNone + '*', alt: '' }; const src = this.num(kg) + ' ' + U.kg; return this.unit === 'imperial' ? { v: this.num(kg * 2.20462, 1) + ' ' + U.lb, alt: src } : { v: src, alt: '' }; }
+  fmt(cm) { return this.len(cm).v; }
+  get lang() { return this.vis('hebrew') ? this.state.lang : 'he'; }
+  get unit() { const def = this.lang === 'he' ? 'metric' : 'imperial'; return this.vis('units') ? (this.state.unit || def) : def; }
+  tr(o) { return o ? (o[this.lang] ?? o.en) : ''; }
+
+  renderVals() {
+    const s = this.state, cfg = this.cfg, lang = this.lang, L = UI[lang], dev = DEVICES[this.device], R = s.route;
+    const pageFlag = { industrial:'industrial', family:'industrial', product:'industrial', project:'projects', medical:'medical', demo:'demo' }[R.page];
+    let blocked = pageFlag && !this.vis(pageFlag);
+    const prodData = R.page === 'product' ? PRODUCTS[R.id] : null;
+    if (R.page === 'product' && !prodData) blocked = true;
+    const cat = R.page === 'medical' ? 'medical' : ['industrial','family','product'].includes(R.page) ? 'industrial' : null;
+    const scopeCat = !s.site && s.scope !== 'shared' ? s.scope : cat;
+    const t = this.themeFor(scopeCat || cat);
+    const onp = contrast('#FFFFFF', t.primary) >= contrast(t.ink, t.primary) ? '#FFFFFF' : t.ink;
+    const accentInk = contrast(t.accent, t.bg) >= 4.5 ? t.accent : t.primary;
+    const dens = { compact:.7, regular:1, airy:1.3 }[t.density] || 1;
+    const rb = t.btn === 'pill' ? '999px' : t.btn === 'square' ? '4px' : '8px';
+    const sh = t.shadow === 'soft' ? '0 1px 2px rgba(16,24,32,.04),0 10px 30px rgba(16,24,32,.06)' : 'none';
+    const zoom = s.site ? 1 : Math.min(1, ((s.cw || 1200) - 48) / dev.w);
+    const fw = s.site ? '100%' : dev.w + 'px';
+    const frameStyle = `position:relative;width:${fw};zoom:${zoom};min-height:100%;background:${t.bg};color:${t.ink};font-family:'${t.font}',Heebo,sans-serif;${s.site ? '' : 'box-shadow:0 0 0 1px #E3E6E9,0 20px 60px rgba(0,0,0,.08);border-radius:10px;overflow:clip;'}` +
+      `--primary:${t.primary};--accent:${t.accent};--ink:${t.ink};--muted:${t.muted};--bg:${t.bg};--surface:${t.surface};--line:${t.line};--onp:${onp};--accentInk:${accentInk};--font:'${t.font}',Heebo,sans-serif;--wh1:${t.wH1};--wh2:${t.wH2};--wh3:${t.wH3};--r:${t.radius}px;--rb:${rb};--sh:${sh};` +
+      `--maxw:1440px;--m:${dev.m}px;--g:${dev.g}px;--cols:${dev.cols};--h1:${dev.h1}px;--h2:${dev.h2}px;--h3:${dev.h3}px;--body:${dev.body}px;--sec:${Math.round(dev.sec * dens)}px;` +
+      `--famAR:4/5;--featGap:0px;--featCols:${this.touch ? 2 : 4};--carMx:${this.touch ? 'calc(-1 * var(--m) + 4px)' : '0px'};--carW:${this.touch ? 'none' : '640px'};--infoCols:${dev.cols === 12 ? 5 : dev.cols};--specPadT:0px;--specGap:0px;--accPad:20px;--carLift:${this.device === 'Tablet' ? '-80px' : '0px'};--descLift:${this.device === 'Tablet' ? '-40px' : '0px'};--sp2:${dev.sp2};--sp3:${dev.sp3};--sp4:${dev.sp4};--spA:${dev.spA};--spB:${dev.spB};--spHeroT:${dev.heroT};--spHeroI:${dev.heroI};--fImgA:${dev.fImgA};--fTxtA:${dev.fTxtA};--fImgB:${dev.fImgB};--fTxtB:${dev.fTxtB};--projAR:${dev.ar}`;
+
+    const warnings = [];
+    const cP = contrast(onp, t.primary); if (cP < 4.5) warnings.push({ text: `Button text on Primary is ${cP.toFixed(1)}:1 (needs 4.5:1).` });
+    const cI = contrast(t.ink, t.bg); if (cI < 4.5) warnings.push({ text: `Text on Background is ${cI.toFixed(1)}:1 (needs 4.5:1).` });
+    const cM = contrast(t.muted, t.bg); if (cM < 4.5) warnings.push({ text: `Secondary text is ${cM.toFixed(1)}:1 (needs 4.5:1).` });
+    const cA = contrast(accentInk, t.bg); if (cA < 4.5) warnings.push({ text: `Accent labels fall back to Primary, which is ${cA.toFixed(1)}:1 on Background (needs 4.5:1).` });
+
+    const go = r => () => this.go(r);
+    const navDefs = [
+      { label:L.home, ic:'home', r:{ page:'home' }, on:true, act:R.page === 'home' },
+      { label:L.industrial, ic:'industrial', r:{ page:'industrial' }, f:'industrial', act:cat === 'industrial' },
+      { label:L.medical, ic:'medical', r:{ page:'medical' }, f:'medical', act:R.page === 'medical' },
+      { label:L.projects, ic:'projects', r:{ page:'project', id:'p1' }, f:'projects', act:R.page === 'project' },
+      { label:L.demo, ic:'demo', r:{ page:'demo' }, f:'demo', act:R.page === 'demo' }
+    ];
+    const navItems = navDefs.filter(n => n.on || this.vis(n.f)).map(n => ({ label:n.label, go:go(n.r), cur:n.act ? 'page' : undefined, fg:n.act ? 'var(--ink)' : 'var(--muted)', priv:!!n.f && this.isPriv(n.f) && this.viewAs === 'admin' }));
+
+    const crumbs = [];
+    const famOf = id => FAMILIES.find(f => f.id === id);
+    if (!blocked && ['industrial','family','product'].includes(R.page)) {
+      crumbs.push({ label:L.industrialCatalog, r:{ page:'industrial' } });
+      if (R.page === 'family') crumbs.push({ label:this.tr(famOf(R.id)?.name) });
+      if (R.page === 'product') { const f = famOf(prodData.fam); crumbs.push({ label:this.tr(f.name), r:{ page:'family', id:f.id } }); const cv = (prodData.variants || []).find(v => v.sku === R.v) || (prodData.variants || [])[0]; crumbs.push({ label:this.tr(cv ? cv.name : prodData.name) }); }
+      if (R.page === 'industrial') crumbs.length = 0;
+    }
+    const crumbVals = crumbs.map((c, i) => ({ label:c.label, go:c.r ? go(c.r) : undefined, fg:c.r ? 'var(--muted)' : 'var(--primary)', fw:c.r ? 500 : 600, cur:c.r ? undefined : 'page', sep:i < crumbs.length - 1 ? '/' : '' }));
+
+    // families
+    const famCount = f => Object.values(PRODUCTS).filter(p => p.fam === f.id).length;
+    const families = FAMILIES.map(f => { const c = famCount(f); const pending = f.id !== 'rav-ta' && f.id !== 'picking';
+      return { name:this.tr(f.name), media:f.media, img:f.id === 'rav-ta' ? 'assets/tiltbin-cover-v2.png' : (f.img || null), count: f.id === 'rav-ta' ? `6 ${L.sizes} · ${L.sku} 2020–2090` : c ? `${c} ${L.products}` : '', pending, go:go({ page:'family', id:f.id }) }; });
+    const q = s.query.trim().toLowerCase();
+    const results = [];
+    if (q) {
+      Object.values(PRODUCTS).forEach(p => {
+        if ((p.name.en + ' ' + (p.name.he || '')).toLowerCase().includes(q)) results.push({ name:this.tr(p.name), meta:this.tr(famOf(p.fam).name), go:go({ page:'product', id:p.id }) });
+        (p.variants || []).forEach(v => { if (v.sku.includes(q) || (v.name.en + ' ' + v.name.he).toLowerCase().includes(q)) results.push({ name:this.tr(v.name), meta:'SKU ' + v.sku, go:go({ page:'product', id:p.id, v:v.sku }) }); });
+      });
+    }
+
+    // family page
+    let fam = { name:'', sub:'', hasLineup:false, lineup:[], groups:[] };
+    if (R.page === 'family') {
+      const f = famOf(R.id) || FAMILIES[0];
+      fam.name = this.tr(f.name); fam.sub = this.tr(f.sub);
+      const items = Object.values(PRODUCTS).filter(p => p.fam === f.id);
+      const card = p => ({ img:p.img || '', hasImg:!!p.img, noImg:!p.img, name:this.tr(p.name), sub:p.variants ? `${p.variants.length} ${L.sizes}` : '', pending:!!p.pending, go:go({ page:'product', id:p.id }) });
+      if (f.id === 'rav-ta') {
+        const sc = 150 / 354;
+        fam.hasLineup = true;
+        fam.lineup = RAV.map(v => ({ label:this.tr({ en:'Tilt Bin ' + v.n, he:'רב תא ' + v.n }), sku:v.sku, img:v.img, lw:(v.vis / VIS_MAX * 100).toFixed(2) + '%', ar:AR[v.n], aria:'Tilt Bin ' + v.n + ', SKU ' + v.sku, go:go({ page:'product', id:'rav-ta', v:v.sku }) }));
+        fam.groups = [
+          { title:L.products, items:items.map(card) },
+          { title:L.builtOn, items:Object.values(PRODUCTS).filter(p => p.fam === 'rav-ta-systems').map(card) }
+        ];
+      } else fam.groups = items.length ? [{ title:L.products, items:items.map(card) }] : [];
+      if (!items.length && f.id !== 'rav-ta') fam.groups = [{ title:L.dataPending, items:[] }];
+    }
+
+    // product page
+    let prod = { title:'', thumbs:[], variants:[], extRows:[], table:[], features:[], files:[], relGroups:[], projects:[], adminNotes:[], basedOn:{} };
+    if (prodData && !blocked) {
+      const p = prodData, vs = p.variants || [];
+      const cur = vs.find(v => v.sku === R.v) || vs[0];
+      const f = famOf(p.fam);
+      const sc = 40 / 354, hs = 300 / 354;
+      prod.title = cur ? this.tr(cur.name) : this.tr(p.name);
+      prod.famName = this.tr(f.name); prod.goFam = go({ page:'family', id:f.id });
+      prod.hasSku = !!cur; prod.sku = cur ? cur.sku : '';
+      prod.desc = p.desc ? this.tr(p.desc) : (lang === 'he' ? 'מק״ט, מידות, תמונות ותיאור ממתינים לנתוני MEDIKUP.' : 'SKU, dimensions, photos and description are awaiting MEDIKUP product data.');
+      prod.descFallback = lang === 'he' && p.desc && !p.desc.he;
+      prod.hasVariants = vs.length > 0; prod.carousel = vs.length > 1; prod.single = !prod.carousel; prod.slides = vs.map((v, i) => ({ zoom:() => this.setState({ lb:{ src:v.img, alt:this.tr(v.name) } }), src:v.img, alt:this.tr(v.name), ol:'none', snap:i === vs.length - 1 ? 'end' : 'start' }));
+      const cmb = p.combos ? this.comboOf(p) : null, pgal = cmb ? cmb.gal : p.gallery, gid = p.id + (cmb ? '|' + JSON.stringify(cmb.sel) : '');
+      prod.opts = cmb ? p.opts.map(o => ({ label:this.tr(o.label), vals:o.vals.map(ov => { const on = cmb.sel[o.k] === ov.v; const ok = p.combos.some(c => c.sel[o.k] === ov.v && Object.keys(c.sel).every(k => k === o.k || c.sel[k] === cmb.sel[k])); return { label:this.tr(ov.label), on, bg:on ? 'var(--primary)' : 'var(--bg)', fg:on ? '#fff' : (ok ? 'var(--ink)' : 'var(--muted)'), bd:on ? 'var(--primary)' : 'var(--line)', bs:ok || on ? 'solid' : 'dashed', go:() => this.pickOpt(p, o.k, ov.v) }; }) })) : [];
+      prod.hasOpts = prod.opts.length > 0;
+      const gi = pgal && s.gal && s.gal.id === gid ? Math.min(s.gal.i, pgal.length - 1) : 0;
+      prod.gal = (pgal || []).length > 1 ? pgal.map((src, i) => ({ src, on:i === gi, bd:i === gi ? 'var(--primary)' : 'var(--line)', aria:this.tr(p.name) + ' ' + (i + 1), go:() => this.setState({ gal:{ id:gid, i } }) })) : [];
+      prod.hasGal = prod.gal.length > 0;
+      prod.hasPhoto = !!cur; prod.noPhoto = !cur && !pgal && !p.img; prod.singleAr = vs.length ? '5/4' : '4/5';
+      if (cur) { prod.photo = cur.img; prod.photoAlt = this.tr(cur.name) + ' — ' + this.tr(p.color); prod.diagram = cur.diagram; prod.diagramAlt = (lang === 'he' ? 'איור טכני של ' : 'Technical illustration of ') + this.tr(cur.name); }
+      prod.photos = (cur ? [{ src:prod.photo, alt:prod.photoAlt }] : pgal ? [{ src:pgal[gi], alt:this.tr(p.name) + ' — ' + (gi + 1) + '/' + pgal.length }] : p.img ? [{ src:p.img, alt:this.tr(p.name) }] : []).map(ph => ({ ...ph, canZoom:p.fam === 'rav-ta-systems', zoom:() => this.setState({ lb:{ src:ph.src, alt:ph.alt } }) })); if (!cur && p.img) { prod.hasPhoto = true; prod.noPhoto = false; } prod.dimSvg = cur ? dimSvg(cur.n, L) : null; prod.diagrams = cur ? [{ src:prod.diagram, alt:prod.diagramAlt }] : [];
+      prod.color = this.tr(p.color);
+      prod.variants = vs.map(v => { const on = v === cur; return { label:this.tr(v.name), on, go:go({ page:'product', id:p.id, v:v.sku }), img:v.img, lw:(v.vis / VIS_MAX * 86).toFixed(2) + '%', ar:AR[v.n], bd:on ? 'var(--primary)' : 'var(--line)', bdw:'1px', bg:on ? 'var(--surface)' : 'var(--bg)' }; });
+      const thumbLabels = cur ? ['FRONT', 'IN USE', 'DETAIL'] : ['PHOTO 1', 'PHOTO 2'];
+      prod.thumbs = thumbLabels.map((l, i) => ({ label:l, on:i === s.thumb, bd:i === s.thumb ? 'var(--ink)' : 'transparent', go:() => this.setState({ thumb:i }) }));
+      prod.mediaLabel = (cur ? 'PRODUCT PHOTO — ' + thumbLabels[s.thumb] + ' · SCHEMATIC TO SCALE' : 'PRODUCT PHOTO PENDING');
+      const price = cur && this.vis('prices') ? DEMO_PRICE[cur.sku] * ({ guest:1, standard:.92, contract:.8 }[s.demo.customer]) : null;
+      prod.hasPrice = price != null && s.demo.customer !== 'guest';
+      prod.price = price ? '$' + price.toFixed(2) : ''; prod.priceNote = 'FICTIONAL · ' + s.demo.customer.toUpperCase() + ' CUSTOMER';
+      prod.share = () => this.setState({ shareOpen:true, shareCopy:'' });
+      prod.shareLabel = L.sharePage;
+      prod.hasSpecs = !!cur;
+      if (!cur && p.dims) { prod.hasSpecs = true; const dm = p.dims, rr = []; const row = (label, mm, ic) => { const f = this.len(mm / 10); return { label, value:f.v, alt:f.alt, ic }; };
+        if (dm.w) rr.push(row(L.width, dm.w, 'assets/ic-width.svg')); if (dm.h) rr.push(row(L.height, dm.h, 'assets/ic-height.svg')); if (dm.d) rr.push(row(L.depth, dm.d, 'assets/ic-depth.svg'));
+        prod.specGroups = [{ title:L.wholeUnit, sub:this.tr(p.name), icon:'', iw:'0px', ih:'0px', icS:'assets/ic-measurements.svg', rows:rr }]; }
+      if (cur) {
+        const row = (label, f, ic) => ({ label, value:f.v, alt:f.alt, ic:ic || '' });
+        prod.specGroups = [
+          { title:L.wholeUnit, sub:this.tr(cur.name), icon:'', iw:'0px', ih:'0px', icS:'assets/ic-measurements.svg', rows:[row(L.width, this.len(cur.w), 'assets/ic-width.svg'), row(L.height, this.len(cur.h), 'assets/ic-height.svg'), row(L.depth, this.len(cur.d), 'assets/ic-depth.svg')] },
+          { title:L.perBin, sub:cur.n + ' × ' + (lang === 'he' ? 'תאים' : 'bins'), icon:'', iw:'0px', ih:'0px', icC:'assets/vec-tilt-bin-cell.svg?v=3', rows:[(() => { const f = this.len(Math.round(cur.w / cur.n * 100) / 100); return { label:L.binWidth, value:'≈ ' + f.v, alt:f.alt ? '≈ ' + f.alt : '', ic:'assets/ic-width.svg' }; })(), row(L.capacity, this.vol(cur.ml), 'assets/ic-capacity.svg'), row(L.load, this.load(cur.kg), 'assets/ic-load.svg')] }
+        ];
+        prod.hasLoadNote = cur.kg == null;
+        prod.table = vs.map(v => ({ name:this.tr(v.name), sku:v.sku, w:this.fmt(v.w), h:this.fmt(v.h), d:this.fmt(v.d), ml:this.vol(v.ml).v, kg:this.load(v.kg).v, bg:v === cur ? 'var(--surface)' : 'transparent', fw:v === cur ? 600 : 400, go:go({ page:'product', id:p.id, v:v.sku }) }));
+      }
+      prod.hasInt = false;
+      prod.features = (p.features || []).map((ft, i) => ({ ic:ft.ic || '', title:this.tr(ft.title), body:this.tr(ft.body), media:ft.img ? '' : ft.media, img:ft.img || null, ar:ft.ar || (ft.img ? '1/1' : '16/10'), placeholder:!!ft.ph, side:i % 2 ? 'B' : 'A', imgOrder:i * 2, txtOrder:i * 2 + 1 }));
+      prod.hasFeatures = prod.features.length > 0;
+      const files = s.sampleFiles && cur ? [{ type:'PDF', name:'SAMPLE — ' + prod.title + ' datasheet', meta:'Demo file · 1.2 MB', f:'pdf' }, { type:'DWG', name:'SAMPLE — ' + prod.title + ' drawing', meta:'Demo file · 340 KB', f:'dwg' }] : [];
+      prod.files = files.filter(x => this.vis(x.f)).map(x => ({ ...x, go:e => e.preventDefault() }));
+      prod.hasFiles = prod.files.length > 0;
+      prod.hasBasedOn = !!p.basedOn;
+      if (p.basedOn) prod.basedOn = { name:this.tr(PRODUCTS[p.basedOn].name), go:go({ page:'product', id:p.basedOn }) };
+      if (p.id === 'rav-ta') {
+        const relCard = (x, rel) => ({ name:this.tr(x.name), rel, hasRel:!!rel, img:x.img || '', hasImg:!!x.img, noImg:!x.img, go:go({ page:'product', id:x.id }) });
+        const sys = Object.values(PRODUCTS).filter(x => x.fam === 'rav-ta-systems');
+        prod.relGroups = [
+          { title:L.compatible, note:L.relNote, items:sys.filter(x => x.rel === 'compatible').map(x => relCard(x, '')) },
+          { title:L.builtOn, note:L.relNote, items:sys.filter(x => x.rel === 'derived').map(x => relCard(x, lang === 'he' ? 'מבוסס רב תא' : 'Built on Tilt Bins')) }
+        ];
+      }
+      prod.projects = this.vis('projects') ? (p.projects || []).map(id => ({ title:'Sample project — Picking wall', go:go({ page:'project', id }) })) : [];
+      prod.hasProjects = prod.projects.length > 0;
+      const notes = [];
+      if (!cur) notes.push('Variants, specifications, key features — hidden: no data in the product sheet.');
+      if (cur) notes.push('Single bin width is computed (unit width ÷ bins), marked ≈ — replace with the measured value when available.', 'Specs: legacy G1 brochure values, unrounded. Diagram labelled illustrative.', 'Internal dimensions — hidden: not supplied.');
+      if (cur && cur.kg == null) notes.push('Tilt Bin 9 load wording is provisional — needs product-owner approval.');
+      if (!prod.hasFiles) notes.push(s.sampleFiles ? 'Downloads — hidden by PDF/DWG feature flags.' : 'Downloads — hidden: no files attached (toggle sample files in Data).');
+      if (!prod.hasPrice) notes.push(this.vis('prices') ? 'Price — hidden for guest customer type.' : 'Price — hidden: Prices feature is off.');
+      if (p.id === 'rav-ta') notes.push('Feature 2 is a placeholder module awaiting MEDIKUP copy and media.');
+      prod.adminNotes = notes; prod.showAdmin = this.viewAs === 'admin' && !s.site;
+    }
+
+    // project
+    let proj = { hotspots:[], products:[], pop:{} };
+    if (R.page === 'project' && !blocked) {
+      proj.title = lang === 'he' ? 'פרויקט לדוגמה — קיר ליקוט' : 'Sample project — Picking wall';
+      proj.summary = lang === 'he' ? 'תוכן דמו שמדגים את תבנית הפרויקט והנקודות האינטראקטיביות. יוחלף בהתקנה אמיתית של MEDIKUP.' : 'Demo content showing the project template and interactive hotspots. Replace with a real MEDIKUP installation and its photos.';
+      const pname = h => { const p = PRODUCTS[h.pid]; const v = h.v && p.variants ? p.variants.find(x => x.sku === h.v) : null; return v ? this.tr(v.name) : this.tr(p.name); };
+      proj.hotspots = s.hotspots.map((h, i) => { const open = s.pop === i; return { left:(h.x * 100).toFixed(2) + '%', top:(h.y * 100).toFixed(2) + '%', open, aria:(open ? 'Close ' : 'Show ') + pname(h), rot:open ? '45deg' : '0deg', bg:open ? 'var(--ink)' : 'var(--bg)', fg:open ? 'var(--bg)' : 'var(--ink)', toggle:e => { e.stopPropagation(); this.setState({ pop:open ? null : i }); } }; });
+      const ph = s.pop != null ? s.hotspots[s.pop] : null;
+      const isMob = this.touch;
+      proj.popFloat = !!ph && !isMob; proj.popSheet = !!ph && isMob;
+      if (ph) {
+        const p = PRODUCTS[ph.pid];
+        const v = ph.v && p.variants ? p.variants.find(x => x.sku === ph.v) : null;
+        const left = ph.x > .55; const ty = ph.y < .3 ? '-10%' : ph.y > .7 ? '-90%' : '-50%';
+        proj.pop = { name:pname(ph), sub:v ? 'SKU ' + v.sku + ' · ' + this.tr(PRODUCTS[ph.pid].name) : this.tr(famOf(p.fam).name), left:(ph.x * 100) + '%', top:(ph.y * 100) + '%', tf:`translate(${left ? 'calc(-100% - 28px)' : '28px'},${ty})`,
+          go:() => window.open(location.href.split('#')[0] + '#site' + this.routeHash({ page:'product', id:ph.pid, v:ph.v }), '_blank', 'noopener,noreferrer') };
+      }
+      proj.closePop = e => { e && e.stopPropagation(); this.setState({ pop:null }); };
+      proj.editing = s.hsEdit && !s.site; proj.editName = this.tr(PRODUCTS[s.hsProduct]?.name);
+      proj.cursor = proj.editing ? 'crosshair' : 'default'; proj.outline = proj.editing ? '2px dashed #C9A2E8' : 'none';
+      proj.onImg = e => {
+        if (proj.editing) { const r = e.currentTarget.getBoundingClientRect(); const x = +((e.clientX - r.left) / r.width).toFixed(3), y = +((e.clientY - r.top) / r.height).toFixed(3);
+          const pr = PRODUCTS[s.hsProduct]; const hotspots = s.hotspots.concat([{ x, y, pid:s.hsProduct, v:pr.variants ? pr.variants[0].sku : undefined }]); this.setState({ hotspots }); this.persist({ hotspots }); }
+        else this.setState({ pop:null });
+      };
+      const pids = [...new Set(s.hotspots.map(h => h.pid))];
+      proj.products = pids.map(id => ({ name:this.tr(PRODUCTS[id].name), go:go({ page:'product', id }) }));
+    }
+
+    // editor rows
+    const d = s.draft;
+    const scopeT = s.scope === 'shared' ? d.theme.shared : { ...d.theme.shared, ...d.theme[s.scope] };
+    const setTok = (k, v) => { const nd = clone(d); nd.theme[s.scope][k] = v; this.commit(nd); };
+    const clearTok = k => { const nd = clone(d); delete nd.theme[s.scope][k]; this.commit(nd); };
+    const colorRows = COLOR_KEYS.map(([k, label]) => ({ label, value:scopeT[k], set:e => setTok(k, e.target.value), over:s.scope !== 'shared' && k in d.theme[s.scope], clear:() => clearTok(k) }));
+    const weightRows = [['wH1','Hero / H1',[600,700,800,900]],['wH2','Section H2',[500,600,700,800]],['wH3','H3 / product',[500,600,700]]].map(([k, label, opts]) => ({ label, value:String(scopeT[k]), opts:opts.map(String), set:e => setTok(k, +e.target.value) }));
+    const shapeRows = [
+      { label:'Buttons', opts:this.seg([{ v:'pill', label:'Pill' }, { v:'rounded', label:'Rounded' }, { v:'square', label:'Square' }], scopeT.btn, v => setTok('btn', v)) },
+      { label:'Card shadow', opts:this.seg([{ v:'soft', label:'Soft' }, { v:'none', label:'None' }], scopeT.shadow, v => setTok('shadow', v)) },
+      { label:'Section spacing', opts:this.seg([{ v:'compact', label:'Compact' }, { v:'regular', label:'Regular' }, { v:'airy', label:'Airy' }], scopeT.density, v => setTok('density', v)) }
+    ];
+    const dirty = JSON.stringify(s.draft) !== JSON.stringify(s.published);
+    const flagGroups = ['Catalogs','Pages','Features','Future'].map(g => ({ name:g, rows:FLAGS.filter(f => f.g === g).map(f => ({ label:f.label, note:f.future ? 'Future · locked' : '', op:f.future ? .5 : 1,
+      opts:this.seg([{ v:'public', label:'Public' }, { v:'private', label:'Private' }, { v:'off', label:'Off' }], d.flags[f.id], v => { if (f.future) return; const nd = clone(d); nd.flags[f.id] = v; this.commit(nd); }).map(o => ({ ...o, dis:!!f.future })) })) }));
+    const stLabel = st => ({ public:'Public', private:'Private', off:'Off' }[st]);
+    const routeRows = [
+      { label:'Home', r:{ page:'home' } }, { label:'Industrial catalog', r:{ page:'industrial' }, f:'industrial' }, { label:'Tilt Bins family', r:{ page:'family', id:'rav-ta' }, f:'industrial' },
+      { label:'Tilt Bin product', r:{ page:'product', id:'rav-ta', v:'2040' }, f:'industrial' }, { label:'Derived: SMART Unit', r:{ page:'product', id:'smart' }, f:'industrial' },
+      { label:'Project + hotspots', r:{ page:'project', id:'p1' }, f:'projects' }, { label:'Medical catalog', r:{ page:'medical' }, f:'medical' }, { label:'Demo', r:{ page:'demo' }, f:'demo' }
+    ].map(x => { const st = x.f ? d.flags[x.f] : 'public'; const act = this.routeHash(x.r) === this.routeHash(R);
+      return { label:x.label, go:go(x.r), state:stLabel(st), stFg:st === 'public' ? '#0A7A55' : st === 'private' ? '#9A6200' : '#B42318', bg:act ? '#F0F2F4' : 'transparent' }; });
+
+    const demoRows = [
+      { label:'Customer type', opts:this.seg([{ v:'guest', label:'Guest' }, { v:'standard', label:'Standard' }, { v:'contract', label:'Contract' }], s.demo.customer, v => this.setState({ demo:{ ...s.demo, customer:v } }), true) },
+      { label:'Units', opts:this.seg([{ v:'metric', label:'Metric' }, { v:'imperial', label:'Imperial' }], this.unit, v => this.setState({ unit:v }), true) },
+      { label:'Prices (fictional)', opts:this.seg([{ v:'public', label:'Show' }, { v:'off', label:'Hide' }], this.vis('prices') ? 'public' : 'off', v => { const nd = clone(d); nd.flags.prices = v; this.commit(nd); }, true) },
+      { label:'Catalog', opts:this.seg([{ v:'industrial', label:'Industrial' }, { v:'medical', label:'Medical' }], cat || 'industrial', v => this.go({ page:v }), true) }
+    ];
+
+    const pg = !blocked ? R.page : 'blocked';
+    const famMob = R.page === 'family' && R.id === 'rav-ta';
+    const famTabs = this.seg([{ v:'products', label:L.productsTab }, { v:'info', label:L.infoTab }], s.famTab, v => this.setState({ famTab:v })).map(o => ({ ...o, fg:o.on ? 'var(--primary)' : 'var(--muted)', sh:o.on ? 'inset 0 -2px 0 var(--primary)' : 'none' }));
+    const famChips = RAV.map((v, i) => { const on = i === s.famIdx; return { label:this.tr(v.name), on, go:() => this.famGoTo(i), bg:on ? 'var(--primary)' : 'var(--bg)', fg:on ? 'var(--onp)' : 'var(--ink)', bd:on ? 'var(--primary)' : 'var(--line)' }; });
+    const famCards = RAV.map((v, i) => ({ name:this.tr(v.name), sku:L.sku + ' ' + v.sku, img:v.img, lw:(v.vis / VIS_MAX * 100 * (v.n === 2 ? .92 : 1)).toFixed(2) + '%', ar:AR[v.n], aria:this.tr(v.name) + ', ' + L.sku + ' ' + v.sku, bd:i === s.famIdx ? 'var(--ink)' : 'var(--line)', go:go({ page:'product', id:'rav-ta', v:v.sku }) }));
+    const isMobile = true, isTouch = this.touch;
+    const mo = isTouch && !!s.menu;
+    return {
+      showChrome: !s.site, L, dir: lang === 'he' ? 'rtl' : 'ltr', lang, frameStyle, canvasRef: this.canvasRef, importRef: this.importRef,
+      canvasPad: s.site ? '0' : '0 24px', ovPos: s.site ? 'fixed' : 'absolute', ovH: s.site ? '100vh' : Math.round((window.innerHeight - 56) / zoom) + 'px', mainOv: s.site ? 'visible' : 'auto', mainH: s.site ? 'auto' : 'calc(100vh - 56px)',
+      wideBar: window.innerWidth >= 1280,
+      status: dirty ? { label:'Draft · unpublished changes', short:window.innerWidth >= 1280 ? 'Draft · unpublished' : 'Draft', bg:'#FFF6E5', fg:'#7A4B00', dot:'#E59A00' } : { label:'Published', short:'Published', bg:'#E8F6EF', fg:'#0A6B4A', dot:'#12A46C' },
+      deviceOpts: this.seg(['Desktop','Tablet','Mobile'], s.device, v => { this.setState({ device:v }); this.persist({ device:v }); }),
+      viewOpts: this.seg([{ v:'admin', label:'Admin preview' }, { v:'public', label:'Public visitor' }], s.viewAs, v => this.setState({ viewAs:v })),
+      gridOn: s.grid, toggleGrid: () => this.setState({ grid:!s.grid }),
+      gridBtn: s.grid ? { label:'Hide grid', bg:'#FFE8F9', fg:'#B0108A', bd:'#FFB8EE' } : { label:'Show grid', bg:'#fff', fg:'#1D2327', bd:'#E3E6E9' },
+      gridCols: Array.from({ length:dev.cols }, (_, i) => String(i + 1)),
+      gridLabel: `${this.device} · ${dev.cols} cols · ${dev.g}px gutter · ${dev.m}px margin`,
+      undo: () => { const prev = this.hist.pop(); if (prev) { this.setState({ draft:prev }); this.persist({ draft:prev }); } },
+      cantUndo: this.hist.length === 0, undoOp: this.hist.length ? 1 : .45,
+      notDirty: !dirty, revertOp: dirty ? 1 : .45,
+      revert: () => this.commit(clone(s.published)),
+      publish: () => { const published = clone(s.draft); this.setState({ published }); this.persist({ published }); },
+      openSite: () => window.open(location.href.split('#')[0] + '#site' + this.routeHash(), '_blank', 'noopener,noreferrer'),
+      tabOpts: this.seg([{ v:'theme', label:'Theme' }, { v:'pages', label:'Pages & features' }, { v:'data', label:'Data' }], s.tab, v => this.setState({ tab:v })).map(o => ({ ...o, bg:o.on ? '#F0F2F4' : 'transparent', sh:'none' })),
+      tabTheme: s.tab === 'theme', tabPages: s.tab === 'pages', tabData: s.tab === 'data',
+      scopeOpts: this.seg([{ v:'shared', label:'Shared' }, { v:'industrial', label:'Industrial' }, { v:'medical', label:'Medical' }], s.scope, v => { this.setState({ scope:v }); if (v !== 'shared') this.go({ page:v }); }),
+      scopeNote: s.scope === 'shared' ? 'Default tokens for every page and both catalogs.' : `Overrides apply only inside the ${s.scope} catalog. Unset tokens inherit Shared.`,
+      warnings, hasWarnings: warnings.length > 0,
+      presets: PRESETS.map(p => ({ name:p.name, a:p.t.primary, b:p.t.accent, c:p.t.surface, go:() => { const nd = clone(d); Object.assign(nd.theme[s.scope], p.t); this.commit(nd); } })),
+      colorRows, weightRows, shapeRows,
+      fontOpts: ['Heebo','Assistant','Rubik'], fontVal: scopeT.font, setFont: e => setTok('font', e.target.value),
+      radiusVal: scopeT.radius, radiusLabel: scopeT.radius + 'px', setRadius: e => setTok('radius', +e.target.value),
+      exportTheme: () => { const blob = new Blob([JSON.stringify({ format:'medikup-theme', version:1, theme:d.theme, flags:d.flags }, null, 2)], { type:'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'medikup-theme.json'; a.click(); },
+      openImport: () => this.setState({ importOpen:true, importErr:'' }), closeImport: () => this.setState({ importOpen:false }),
+      importOpen: s.importOpen, importErr: !!s.importErr, importErrText: s.importErr,
+      applyImport: () => { try { const j = JSON.parse(this.importRef.current.value); if (!j.theme || !j.theme.shared) throw new Error('Missing theme.shared'); const nd = clone(d); nd.theme = { shared:{ ...DEF_THEME, ...j.theme.shared }, industrial:j.theme.industrial || {}, medical:j.theme.medical || {} }; if (j.flags) nd.flags = { ...nd.flags, ...j.flags }; this.commit(nd); this.setState({ importOpen:false }); } catch (e) { this.setState({ importErr:'Couldn’t read that file: ' + e.message }); } },
+      resetDefault: () => this.commit(defConfig()),
+      routeRows, flagGroups,
+      dataRows: RAV.map(v => ({ name:String(v.n), sku:v.sku, w:v.w, h:v.h, d:v.d, ml:v.ml, kg:v.kg ?? '—' })),
+      assumeOpts: this.seg([{ v:'cm', label:'cm (as labeled)' }, { v:'mm', label:'mm (suspected)' }], s.assume, v => this.setState({ assume:v })),
+      sampleFiles: s.sampleFiles, toggleSample: () => this.setState({ sampleFiles:!s.sampleFiles }),
+      hsProduct: s.hsProduct, setHsProduct: e => this.setState({ hsProduct:e.target.value }),
+      hsProductOpts: Object.values(PRODUCTS).filter(p => p.fam !== 'shutter').map(p => ({ id:p.id, name:p.name.en })),
+      hsBtn: s.hsEdit ? { label:'Done placing', bg:'#4A2770', fg:'#fff' } : { label:'Place hotspot on project photo', bg:'#F0F2F4', fg:'#1D2327' },
+      toggleHsEdit: () => { this.setState({ hsEdit:!s.hsEdit }); if (!s.hsEdit) this.go({ page:'project', id:'p1' }); },
+      hsList: s.hotspots.map((h, i) => ({ label:PRODUCTS[h.pid].name.en + (h.v ? ' · ' + h.v : ''), coords:`x ${h.x.toFixed(2)} · y ${h.y.toFixed(2)}`, remove:() => { const hotspots = s.hotspots.filter((_, j) => j !== i); this.setState({ hotspots, pop:null }); this.persist({ hotspots }); } })),
+      // site
+      goHome: go({ page:'home' }), goIndustrial: go({ page:'industrial' }), goProject: go({ page:'project', id:'p1' }), goRavProduct: go({ page:'product', id:'rav-ta', v:'2040' }),
+      navItems: navItems.map((n, i) => ({ ...n, ...(k => ({ ic_home:k === 'home', ic_industrial:k === 'industrial', ic_medical:k === 'medical', ic_projects:k === 'projects', ic_demo:k === 'demo' }))(navDefs.filter(d => d.on || this.vis(d.f))[i].ic), menuBg: 'transparent', menuFg: n.cur ? 'var(--primary)' : 'var(--ink)' })), isMobile, notMobile: !isMobile, isTouch, titleTop: isTouch, titleSide: !isTouch, deskCta: !isTouch, menuOpen: mo, hamColor: 'var(--accent)', hdrBg: isMobile ? '#F6F8F9' : '#005377', hdrLogo: isMobile ? 'assets/medikup-logo-bold-light.svg' : 'assets/medikup-logo-header.svg?v=2', toggleMenu: () => this.setState({ menu:!s.menu }), closeMenu: () => this.setState({ menu:false }),
+      bgA: { op:mo ? 0 : 1, tf:mo ? 'rotate(90deg) scale(.6)' : 'none' }, bgB: { op:mo ? 1 : 0, tf:mo ? 'none' : 'rotate(-90deg) scale(.6)' },
+      menuTransform: mo ? 'translateY(0)' : 'translateY(-105%)', menuVis: mo ? 'visible' : 'hidden', menuBackdropOp: mo ? 1 : 0, menuPE: mo ? 'auto' : 'none',
+      menuH: s.site ? '100vh' : Math.round((window.innerHeight - 56) / zoom) + 'px',
+      barLang: this.seg([{ v:'en', label:'EN' }, { v:'he', label:'עב' }], lang, v => this.setState({ lang:v, unit:null })).map(o => ({ ...o, bg:o.on ? '#006197' : 'transparent', fg:o.on ? '#fff' : '#5B6770', sh:'none' })),
+      barUnit: this.seg([{ v:'metric', label:'cm' }, { v:'imperial', label:'in' }], this.unit, v => this.setState({ unit:v })),
+      showLang: this.vis('hebrew'), langOpts: this.seg([{ v:'en', label:'EN' }, { v:'he', label:'עב' }], lang, v => this.setState({ lang:v, unit:null }), true).map(o => ({ ...o, bg:o.on ? 'var(--primary)' : 'transparent', fg:o.on ? 'var(--onp)' : 'var(--muted)' })),
+      showUnits: this.vis('units'), unitOpts: this.seg([{ v:'metric', label:L.u.cm }, { v:'imperial', label:L.u.in }], this.unit, v => this.setState({ unit:v }), true).map(o => ({ ...o, bg:o.on ? 'var(--primary)' : 'transparent', fg:o.on ? 'var(--onp)' : 'var(--muted)' })),
+      hasCrumbs: crumbVals.length > 0, crumbs: crumbVals,
+      pHome: pg === 'home', pIndustrial: pg === 'industrial', pFamily: pg === 'family', pProduct: pg === 'product', pProject: pg === 'project', pMedical: pg === 'medical', pDemo: pg === 'demo', pBlocked: pg === 'blocked',
+      blockedNote: this.viewAs === 'admin' && !s.site ? 'Simulated: this page is switched Off in Pages & features.' : 'It may have moved, or isn’t public yet.',
+      projectsOn: this.vis('projects'), hotspotsOn: this.vis('hotspots'), quoteOn: this.vis('quote'),
+      homeCats: [
+        { name:L.industrialCatalog, sub:this.vis('industrial') ? L.exploreIndustrial + (lang === 'he' ? ' ←' : ' →') : L.comingSoon, subFg:this.vis('industrial') ? 'var(--primary)' : 'var(--muted)', media:'INDUSTRIAL CATALOG PHOTO', go:go({ page:'industrial' }), dis:!this.vis('industrial'), op:this.vis('industrial') ? 1 : .6 },
+        { name:L.medicalCatalog, sub:this.vis('medical') ? (lang === 'he' ? 'לקטלוג ←' : 'Open catalog →') : L.comingSoon, subFg:this.vis('medical') ? 'var(--primary)' : 'var(--muted)', media:'MEDICAL CATALOG PHOTO', go:go({ page:'medical' }), dis:!this.vis('medical'), op:this.vis('medical') ? 1 : .6 }
+      ],
+      query: s.query, onQuery: e => this.setState({ query:e.target.value }), hasQuery: !!q, results, noResults: !!q && !results.length,
+      families, fam, prod, proj, famMob, famDesk: !famMob, famTabs, famTabInfo: s.famTab === 'info', famTabProducts: s.famTab === 'products', famChips, famCards, famScrollRef: this.famScrollRef, famFeatures: ((PRODUCTS['rav-ta'] || {}).features || []).filter(ft => ft.img).map(ft => ({ title:this.tr(ft.title), body:this.tr(ft.body), img:ft.img, ic:ft.ic || '' })), ...(() => { const vs = (prodData && prodData.variants) || []; const i = Math.max(0, vs.findIndex(v => v.sku === R.v)); const sw = j => () => { const v = vs[j]; if (!v) return; const nr = { ...R, v:v.sku }; this.setState({ route:nr, thumb:0 }, () => requestAnimationFrame(() => this.pScrollTo(true))); try { history.replaceState(null, '', '#' + (s.site ? 'site' : '') + this.routeHash(nr)); } catch (e) {} }; const rtl = lang === 'he'; return { pPrev:sw(i - 1), pNext:sw(i + 1), pPrevOp:i > 0 ? 1 : .25, pNextOp:i < vs.length - 1 ? 1 : .25, pPrevPe:i > 0 ? 'auto' : 'none', pNextPe:i < vs.length - 1 ? 'auto' : 'none', pChevStart:rtl ? 'scaleX(-1)' : 'none', pChevEnd:rtl ? 'none' : 'scaleX(-1)' }; })(),  pScrollRef: this.pScrollRef, pOnScroll: this.pOnScroll, ...(() => { const hd = o => o ? { bg:'#EEF1F3', fg:'var(--ink)', mx:'calc(-1 * var(--m))', px:'var(--m)' } : { bg:'transparent', fg:'var(--ink)', mx:'0px', px:'0px' }; return { hdSizes:hd(!!s.sizesOpen), hdColor:hd(!!s.colorOpen), hdSpecs:hd(!s.specsClosed), hdTable:hd(!!s.tableOpen), hdFeat:hd(!!s.featOpen), hdFamTable:hd(!!s.famTableOpen) }; })(), goRavSystems: go({ page:'family', id:'rav-ta-systems' }), famPrev: () => this.famGoTo(Math.max(0, s.famIdx - 1)), famNext: () => this.famGoTo(Math.min(RAV.length - 1, s.famIdx + 1)), famChevStart: lang === 'he' ? 'scaleX(-1)' : 'none', famChevEnd: lang === 'he' ? 'none' : 'scaleX(-1)', famPrevOp: s.famIdx > 0 ? 1 : .25, famNextOp: s.famIdx < RAV.length - 1 ? 1 : .25, famPrevPe: s.famIdx > 0 ? 'auto' : 'none', famNextPe: s.famIdx < RAV.length - 1 ? 'auto' : 'none', toggleFamTable: () => this.setState({ famTableOpen:!s.famTableOpen }), famTableOpen: !!s.famTableOpen, famTableChev: s.famTableOpen ? 'rotate(180deg)' : 'none', famTable: ((PRODUCTS['rav-ta'] || {}).variants || []).map(v => ({ name:this.tr(v.name), sku:v.sku, w:this.fmt(v.w), h:this.fmt(v.h), d:this.fmt(v.d), ml:this.vol(v.ml).v, kg:this.load(v.kg).v, bg:'transparent', fw:400, go:go({ page:'product', id:'rav-ta', v:v.sku }) })), toggleFeat: () => this.setState({ featOpen:!s.featOpen }), featOpen: !!s.featOpen, featShown: !isMobile || !!s.featOpen, featChev: s.featOpen ? 'rotate(180deg)' : 'none', toggleSpecs: () => this.setState({ specsClosed:!s.specsClosed }), specsOpen: !s.specsClosed, specsShown: !isMobile || !s.specsClosed, specsChev: s.specsClosed ? 'none' : 'rotate(180deg)', toggleTable: () => this.setState({ tableOpen:!s.tableOpen }), tableOpen: !!s.tableOpen, tableShown: (!isMobile || !!s.tableOpen) && prod.table.length > 0, tableBtn: isMobile && prod.table.length > 0, hasDiagram: prod.diagrams && prod.diagrams.length > 0, tableChev: s.tableOpen ? 'rotate(180deg)' : 'none', toggleColor: () => this.setState({ colorOpen:!s.colorOpen }), colorOpen: !!s.colorOpen, colorShown: !isMobile || !!s.colorOpen, colorChev: s.colorOpen ? 'rotate(180deg)' : 'none', toggleSizes: () => this.setState({ sizesOpen:!s.sizesOpen }), sizesOpen: !!s.sizesOpen, sizesShown: !isMobile || !!s.sizesOpen, sizesChev: s.sizesOpen ? 'rotate(180deg)' : 'none', famOnScroll: this.famOnScroll, demoRows, arrow: lang === 'he' ? '←' : '→',
+      stop: e => e.stopPropagation(),
+      openQuote: () => this.setState({ quote:{ item:prod.title || (R.page === 'family' ? fam.name : (lang === 'he' ? 'פנייה כללית' : 'General enquiry')), sku:prod.sku || '—', sent:false } }),
+      sharePage: () => this.setState({ shareOpen:true, shareCopy:'' }),
+      lb: { show:!!s.lb, src:s.lb ? s.lb.src : '', alt:s.lb ? s.lb.alt : '', close:() => this.setState({ lb:null }) },
+      sh: (() => {
+        const url = location.href.split('#')[0] + '#site' + this.routeHash();
+        const page = (prod.title || (R.page === 'family' ? fam.name : '') || (lang === 'he' ? 'MEDIKUP — מערכות אחסון' : 'MEDIKUP — storage systems'));
+        const msg = page + ' · MEDIKUP\n' + url, enc = encodeURIComponent;
+        const open = u => { window.open(u, '_blank', 'noopener,noreferrer'); };
+        const copy = async () => { let ok = false; try { await navigator.clipboard.writeText(url); ok = true; } catch (er) {} this.setState({ shareCopy: ok ? 'ok' : 'fail' }); clearTimeout(this._shT); if (ok) this._shT = setTimeout(() => this.setState({ shareCopy:'' }), 1800); };
+        const he = lang === 'he', mob = this.touch;
+        return { show: !!s.shareOpen, close: () => this.setState({ shareOpen:false }), url, page,
+          align: mob ? 'flex-end' : 'center', pad: mob ? '0' : '20px', radius: mob ? '16px 16px 0 0' : '16px',
+          kicker: he ? 'שיתוף' : 'Share', title: he ? 'שיתוף העמוד' : 'Share this page', closeLabel: he ? 'סגירה' : 'Close',
+          lWa: 'WhatsApp', lSms: he ? 'הודעה' : 'Messages', lMail: he ? 'אימייל' : 'Email', lCopy: he ? 'העתקה' : 'Copy link',
+          wa: () => open('https://wa.me/?text=' + enc(msg)), sms: () => { location.href = 'sms:?&body=' + enc(msg); }, mail: () => { location.href = 'mailto:?subject=' + enc(page + ' · MEDIKUP') + '&body=' + enc(msg); },
+          copy, copyLabel: s.shareCopy === 'ok' ? (he ? 'הועתק' : 'Copied') : (he ? 'העתקה' : 'Copy'),
+          copied: s.shareCopy === 'ok', copiedLabel: he ? 'הקישור הועתק' : 'Link copied', failed: s.shareCopy === 'fail', failLabel: he ? 'ההעתקה נכשלה. לחצו לחיצה ארוכה על הקישור כדי להעתיק.' : 'Couldn’t copy automatically. Press and hold the link to copy it.',
+          canMore: typeof navigator !== 'undefined' && !!navigator.share, moreLabel: he ? 'אפשרויות נוספות…' : 'More options…',
+          more: async () => { try { await navigator.share({ title: page + ' · MEDIKUP', url }); } catch (er) {} },
+          status: s.shareCopy === 'ok' ? (he ? 'הקישור הועתק' : 'Link copied') : '' };
+      })(),
+      shareAria: L.sharePage, shareMs: this.vis('quote') ? '0' : 'auto',
+      quoteOpen: !!s.quote, quoteSent: !!s.quote?.sent, quoteForm: !!s.quote && !s.quote.sent, quoteItem: s.quote?.item || '', quoteSku: s.quote?.sku || '',
+      sendQuote: () => this.setState({ quote:{ ...s.quote, sent:true } }), closeQuote: () => this.setState({ quote:null })
+    };
+  }
+}
+</script>
+</body>
+</html>
