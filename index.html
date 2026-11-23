@@ -927,7 +927,7 @@ button{cursor:pointer}
               <div style="font:700 12px Heebo;letter-spacing:.04em;color:#5B6770;padding:10px 0 6px;border-bottom:1px solid #1D2327">{{ g.title }}</div>
               <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
                 <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #EEF0F2">
-                  <sc-if value="{{ r.hasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ r.thumb }}" alt="" style="flex:0 0 48px;width:48px;height:60px;border-radius:6px;border:1px solid #E2E6E9;background:#fff;object-fit:contain"></sc-if>
+                  <sc-if value="{{ r.hasThumb }}" hint-placeholder-val="{{ false }}"><span style="flex:0 0 48px;width:48px;height:60px;border-radius:6px;border:1px solid #E2E6E9;background:#fff center / contain no-repeat url({{ r.thumb }})"></span></sc-if>
                   <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
                     <span style="font:600 14px Heebo;display:flex;gap:6px;align-items:center">{{ r.label }}<sc-if value="{{ r.pend }}" hint-placeholder-val="{{ false }}"><span style="font:600 10px Heebo;padding:2px 6px;border-radius:4px;background:#E6F6F5;color:#006197">בבקשה</span></sc-if></span>
                     <span style="font:400 12px/1.4 Heebo;color:#5B6770;overflow-wrap:anywhere">{{ r.sub }}</span>
@@ -951,7 +951,7 @@ button{cursor:pointer}
           <sc-if value="{{ edEmpty }}" hint-placeholder-val="{{ false }}"><span style="font:400 14px Heebo;color:#5B6770;padding:12px 0">עוד אין שינויים. פתח את "עריכת העמוד" בכל עמוד שתרצה לשנות.</span></sc-if>
           <sc-for list="{{ edItems }}" as="it" hint-placeholder-count="2">
             <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #EEF0F2">
-              <sc-if value="{{ it.hasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ it.thumb }}" alt="" style="flex:0 0 40px;width:40px;height:50px;border-radius:6px;border:1px solid #E2E6E9;background:#fff;object-fit:contain"></sc-if>
+              <sc-if value="{{ it.hasThumb }}" hint-placeholder-val="{{ false }}"><span style="flex:0 0 40px;width:40px;height:50px;border-radius:6px;border:1px solid #E2E6E9;background:#fff center / contain no-repeat url({{ it.thumb }})"></span></sc-if>
               <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:600 11px Heebo;color:#006197">{{ it.kind }}</span><span style="font:600 14px Heebo">{{ it.label }}</span><span style="font:400 12px Heebo;color:#5B6770;overflow-wrap:anywhere">{{ it.sub }}</span></div>
               <button onClick="{{ it.del }}" aria-label="הסרה מהבקשה" style="width:32px;height:32px;border:0;background:transparent;color:#B42318;font:600 18px Heebo;cursor:pointer">×</button>
             </div>
@@ -1009,7 +1009,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v006';
+const APP_VER = 'v007';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
 const EDIT_KEY = 'medikup-edits-v1';
@@ -1287,7 +1287,7 @@ class Component extends DCLogic {
       c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
       let data = c.toDataURL('image/webp', .9); if (!data.startsWith('data:image/webp')) data = c.toDataURL('image/png');
-      this.edPut({ ...meta, img:data, fileName:file.name });
+      c.toBlob(b => this.edPut({ ...meta, img:data, thumbUrl:b ? URL.createObjectURL(b) : '', fileName:file.name }), 'image/webp', .6);
     };
     img.onerror = () => { URL.revokeObjectURL(url); alert('לא הצלחתי לקרוא את הקובץ.'); };
     img.src = url;
@@ -1295,7 +1295,7 @@ class Component extends DCLogic {
   async edSend() {
     const list = this.edList(), note = this.state.edNote || '';
     if (!list.length && !note.trim()) return;
-    const images = [], changes = list.map(e => { const { img, ...rest } = e; if (img) { const name = 'img-' + (images.length + 1) + (img.startsWith('data:image/webp') ? '.webp' : '.png'); images.push({ name, data:img.split(',')[1] }); return { ...rest, file:name }; } return rest; });
+    const images = [], changes = list.map(e => { const { img, thumbUrl, ...rest } = e; if (img) { const name = 'img-' + (images.length + 1) + (img.startsWith('data:image/webp') ? '.webp' : '.png'); images.push({ name, data:img.split(',')[1] }); return { ...rest, file:name }; } return rest; });
     if (images.reduce((a, i) => a + i.data.length, 0) > 3.9 * 1024 * 1024) { this.setState({ edMsg:{ ok:false, text:'הבקשה כבדה מדי (מעל 4MB). שלח קודם חלק מהתמונות, ואת השאר בבקשה נוספת.' } }); return; }
     let pw = ''; try { pw = sessionStorage.getItem(EDIT_KEY + '-pw') || ''; } catch (e) {}
     this.setState({ edBusy:true, edMsg:null });
@@ -1310,10 +1310,10 @@ class Component extends DCLogic {
       btns:[{ label:'עריכה', go:() => this.setState({ edDlg:{ target, label, he:p ? p.he : (cur && cur.he) || '', en:p ? p.en : (cur && cur.en) || '', was:{ he:(cur && cur.he) || '', en:(cur && cur.en) || '' } } }) }].concat(p ? [{ label:'ביטול', go:() => this.edDel('text', target) }] : []) }; };
     const hide = (target, label) => { const p = this.edFind('hide', target); return { label, thumb:'', hasThumb:false, sub:p ? 'יוסתר מהאתר' : 'מוצג באתר', pend:!!p, file:false,
       btns:[p ? { label:'ביטול הסתרה', go:() => this.edDel('hide', target) } : { label:'הסתר', go:() => this.edPut({ type:'hide', target, label }) }] }; };
-    const image = (src, label) => { const h = this.edFind('hide', 'image:' + src), r = this.edFind('image', src); return { label, thumb:r ? r.img : src, hasThumb:true, sub:h ? 'תוסתר' : r ? 'תוחלף ב: ' + r.fileName : src.split('/').pop(), pend:!!(h || r), file:!h, fileLabel:r ? 'החלפה אחרת' : 'החלף', onFile:e => { this.edImage(e.target.files[0], { type:'image', target:src, label }); e.target.value = ''; },
+    const image = (src, label) => { const h = this.edFind('hide', 'image:' + src), r = this.edFind('image', src); return { label, thumb:r ? r.thumbUrl : src, hasThumb:true, sub:h ? 'תוסתר' : r ? 'תוחלף ב: ' + r.fileName : src.split('/').pop(), pend:!!(h || r), file:!h, fileLabel:r ? 'החלפה אחרת' : 'החלף', onFile:e => { this.edImage(e.target.files[0], { type:'image', target:src, label }); e.target.value = ''; },
       btns:(h ? [{ label:'ביטול הסתרה', go:() => this.edDel('hide', 'image:' + src) }] : [{ label:'הסתר', go:() => this.edPut({ type:'hide', target:'image:' + src, label }) }]).concat(r ? [{ label:'ביטול החלפה', go:() => this.edDel('image', src) }] : []) }; };
     const adds = (target, label) => { const mine = this.edList().filter(e => e.type === 'add' && e.target.startsWith(target + '#'));
-      return mine.map(e => ({ label:'תמונה חדשה', thumb:e.img, hasThumb:true, sub:e.fileName, pend:true, file:false, btns:[{ label:'הסר', go:() => this.edDel('add', e.target) }] }))
+      return mine.map(e => ({ label:'תמונה חדשה', thumb:e.thumbUrl, hasThumb:true, sub:e.fileName, pend:true, file:false, btns:[{ label:'הסר', go:() => this.edDel('add', e.target) }] }))
         .concat([{ label, thumb:'', hasThumb:false, sub:'קובץ תמונה (PNG/JPG/WebP). Claude יקטין וימיר אותו.', pend:false, file:true, fileLabel:'העלאת תמונה', onFile:e => { this.edImage(e.target.files[0], { type:'add', target:target + '#' + Date.now(), label }); e.target.value = ''; }, btns:[] }]); };
     const groups = [];
     if (R.page === 'home') groups.push({ title:'דף הבית', rows:[txt('ui:heroTitle', 'כותרת ראשית', { he:UI.he.heroTitle, en:UI.en.heroTitle }), txt('ui:heroSub', 'תת-כותרת', { he:UI.he.heroSub, en:UI.en.heroSub })] });
@@ -1346,7 +1346,7 @@ class Component extends DCLogic {
       edClose:() => this.setState({ edPanel:false, edTray:false }),
       edExit:() => { this.setState({ edit:false, edPanel:false, edTray:false }); try { sessionStorage.removeItem(EDIT_KEY + '-pw'); history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} },
       edGroups:groups, edHasGroups:groups.length > 0,
-      edItems:list.map(e => ({ kind:kind[e.type] || e.type, label:e.label || e.target, sub:e.type === 'text' ? short(e.he || e.en) : e.fileName || '', thumb:e.img || '', hasThumb:!!e.img, del:() => this.edDel(e.type, e.target) })),
+      edItems:list.map(e => ({ kind:kind[e.type] || e.type, label:e.label || e.target, sub:e.type === 'text' ? short(e.he || e.en) : e.fileName || '', thumb:e.thumbUrl || '', hasThumb:!!e.img, del:() => this.edDel(e.type, e.target) })),
       edEmpty:!list.length, edNote:s.edNote || '', edNoteSet:e => this.setState({ edNote:e.target.value }), edSend:() => this.edSend(),
       edHasImgs:list.some(e => e.img), edMsgOn:!!s.edMsg, edMsgText:s.edMsg ? s.edMsg.text : '', edMsgBg:s.edMsg && s.edMsg.ok ? '#E8F6EF' : '#FFF1F0', edMsgFg:s.edMsg && s.edMsg.ok ? '#0A6B4A' : '#B42318',
       edDlgOn:!!d, edDlgLabel:d ? d.label : '', edDlgHe:d ? d.he : '', edDlgEn:d ? d.en : '',
