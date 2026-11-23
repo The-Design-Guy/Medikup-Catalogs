@@ -921,7 +921,7 @@ button{cursor:pointer}
       <aside dir="rtl" aria-label="עריכת העמוד" style="position:fixed;top:0;bottom:0;left:0;width:min(440px,100%);z-index:310;background:#fff;box-shadow:0 0 40px rgba(0,0,0,.2);display:flex;flex-direction:column;font-family:Heebo,sans-serif;color:#1D2327">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #E2E6E9"><strong style="font:700 18px Heebo">עריכת העמוד</strong><button onClick="{{ edClose }}" aria-label="סגירה" style="width:40px;height:40px;border:0;background:transparent;font:400 22px Heebo;cursor:pointer;color:#1D2327">×</button></div>
         <div style="flex:1;overflow:auto;padding:8px 18px 140px;display:flex;flex-direction:column;gap:18px">
-          <sc-if value="{{ edOffline }}" hint-placeholder-val="{{ false }}"><div style="font:500 12px/1.5 Heebo;background:#FFF6E5;color:#7A4B00;border-radius:8px;padding:10px 12px;margin-top:8px">השרת עוד לא מוגדר. אפשר לסמן שינויים, אבל השליחה תעבוד רק אחרי ההגדרה ב-Vercel.</div></sc-if>
+          <sc-if value="{{ edOffline }}" hint-placeholder-val="{{ false }}"><div style="font:500 12px/1.5 Heebo;background:#FFF6E5;color:#7A4B00;border-radius:8px;padding:10px 12px;margin-top:8px">השרת עוד לא מוגדר ({{ edOffCode }}). אפשר לסמן שינויים, אבל השליחה תעבוד רק אחרי ההגדרה ב-Vercel.</div></sc-if>
           <sc-for list="{{ edGroups }}" as="g" hint-placeholder-count="2">
             <div style="display:flex;flex-direction:column">
               <div style="font:700 12px Heebo;letter-spacing:.04em;color:#5B6770;padding:10px 0 6px;border-bottom:1px solid #1D2327">{{ g.title }}</div>
@@ -1009,7 +1009,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v007';
+const APP_VER = 'v008';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
 const EDIT_KEY = 'medikup-edits-v1';
@@ -1277,7 +1277,7 @@ class Component extends DCLogic {
     let st = 0; try { const r = await fetch('/api/edits', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ action:'auth', password:pw }) }); st = r.status; } catch (e) {}
     if (st === 200) { try { sessionStorage.setItem(EDIT_KEY + '-pw', pw); } catch (e) {} this.setState({ edit:true, edGate:false, edOffline:false, edBusy:false }); }
     else if (st === 401) this.setState({ edGateErr:'סיסמה שגויה.', edBusy:false });
-    else this.setState({ edit:true, edGate:false, edOffline:true, edBusy:false }); // server not configured yet: edit locally, sending disabled
+    else this.setState({ edit:true, edGate:false, edOffline:true, edOffCode:st, edBusy:false }); // server not configured yet: edit locally, sending disabled
   }
   edImage(file, meta) {
     if (!file) return;
@@ -1301,7 +1301,8 @@ class Component extends DCLogic {
     this.setState({ edBusy:true, edMsg:null });
     let st = 0, j = {}; try { const r = await fetch('/api/edits', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ password:pw, note, page:location.href, changes, images }) }); st = r.status; j = await r.json().catch(() => ({})); } catch (e) {}
     if (st === 200) { this.edSave([]); this.setState({ edNote:'', edBusy:false, edMsg:{ ok:true, text:'נשלח לבדיקה (בקשה ' + j.id + '). Claude יעבור על הבקשה, יכין את התמונות ויעלה גרסה חדשה. עד אז האתר לא משתנה.' } }); }
-    else this.setState({ edBusy:false, edMsg:{ ok:false, text:st === 401 ? 'הסיסמה כבר לא תקפה. צא ממצב עריכה והיכנס שוב.' : st === 503 || st === 0 || st === 404 || st === 501 ? 'השרת עוד לא מוגדר (משתני הסביבה ב-Vercel). השינויים שמורים כאן במגש.' : st === 413 ? 'הבקשה כבדה מדי. שלח פחות תמונות בכל פעם.' : 'השליחה נכשלה (' + st + '). השינויים נשארו במגש. נסה שוב.' } });
+    else { const code = ' [' + (st ? 'קוד ' + st + (j.error ? ' · ' + j.error : '') : 'אין חיבור לשרת') + ']';
+    this.setState({ edBusy:false, edMsg:{ ok:false, text:(st === 401 ? 'הסיסמה כבר לא תקפה. צא ממצב עריכה והיכנס שוב.' : st === 503 || st === 0 || st === 404 || st === 501 ? 'השרת עוד לא מוגדר (משתני הסביבה ב-Vercel). השינויים שמורים כאן במגש.' : st === 413 ? 'הבקשה כבדה מדי. שלח פחות תמונות בכל פעם.' : 'השליחה נכשלה. השינויים נשארו במגש. נסה שוב.') + code } }); }
   }
   editVals(R) {
     const s = this.state, he = o => (o && (o.he ?? o.en)) || '', short = t => { t = String(t || '').replace(/\s+/g, ' '); return t.length > 70 ? t.slice(0, 70) + '…' : t; };
@@ -1341,7 +1342,7 @@ class Component extends DCLogic {
     return {
       edOn:!!s.edit, edGateOn:!!s.edGate && !s.edit, edPw:s.edPw || '', edPwSet:e => this.setState({ edPw:e.target.value }), edGo:() => this.edAuth(), edGateErr:s.edGateErr || '', edHasGateErr:!!s.edGateErr, edBusy:!!s.edBusy, edBusyOp:s.edBusy ? .6 : 1,
       edCloseGate:() => { this.setState({ edGate:false }); try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} },
-      edCount:list.length, edOffline:!!s.edOffline, edPanelOn:!!s.edPanel && !!s.edit, edTrayOn:!!s.edTray && !!s.edit,
+      edCount:list.length, edOffline:!!s.edOffline, edOffCode:s.edOffCode ? 'קוד ' + s.edOffCode : 'אין חיבור', edPanelOn:!!s.edPanel && !!s.edit, edTrayOn:!!s.edTray && !!s.edit,
       edTogglePanel:() => this.setState({ edPanel:!s.edPanel, edTray:false }), edToggleTray:() => this.setState({ edTray:!s.edTray, edPanel:false, edMsg:null }),
       edClose:() => this.setState({ edPanel:false, edTray:false }),
       edExit:() => { this.setState({ edit:false, edPanel:false, edTray:false }); try { sessionStorage.removeItem(EDIT_KEY + '-pw'); history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} },
