@@ -1,0 +1,15 @@
+{
+  "id": "2026-11-23-21-54-26-d9bf",
+  "created": "2026-11-23T21:54:26.656Z",
+  "status": "pending",
+  "page": "https://medikup-catalogs.vercel.app/?edit#site/product/rav-ta/2020",
+  "note": "",
+  "changes": [
+    {
+      "type": "hide",
+      "target": "product:rav-ta:2020",
+      "label": "גודל: רב תא 2",
+      "page": "#site/product/rav-ta/2020"
+    }
+  ]
+}
