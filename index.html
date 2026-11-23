@@ -1009,7 +1009,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v008';
+const APP_VER = 'v009';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
 const EDIT_KEY = 'medikup-edits-v1';
@@ -1148,7 +1148,7 @@ const FAMILIES = [
   { id:'rav-ta', name:{ en:'Tilt Bins', he:'רב תא' }, sub:{ en:'Modular storage units with clear tilt-out bins, in six sizes, all 60 cm wide.', he:'פתרונות אחסון מודולריים לפריטים קטנים, רכיבים וחלקי חילוף. תאים שקופים, מגוון גדלים ואפשרויות התקנה המאפשרים לשמור על סביבת עבודה מסודרת ונגישה.' }, media:'TILT BINS FAMILY PHOTO' },
   { id:'rav-ta-systems', name:{ en:'Tilt Bin Cabinets & Stands', he:'ארונות ומעמדי רב תא' }, sub:{ en:'Systems listed in the product sheet. SKUs, dimensions and photos are still missing.', he:'מערכות מטבלת המוצרים. מק״טים, מידות ותמונות חסרים.' }, media:'CABINETS & STANDS PHOTO' },
   { id:'picking', name:{ en:'Picking Bins', he:'ארקליות' }, sub:{ en:'Stackable open-front picking bins in four sizes.', he:'ארקליות פתוחות מלפנים, ניתנות להערמה, בארבעה גדלים.' }, media:'PICKING BINS PHOTO', img:'assets/picking-bins-cover.webp' },
-  { id:'shelf-md', name:{ en:'Medium-Duty Shelving', he:'מדפים לעומס בינוני' }, sub:{ en:'Steel shelving for medium loads, in five widths, two heights and four layouts.', he:'מידוף פלדה לעומס בינוני, בחמישה רוחבים, שני גבהים וארבע תצורות חיבור.' }, media:'SHELVING PHOTO', img:'assets/shelving/shelf-cover.webp' },
+  { id:'shelf-md', direct:'shelf-md', name:{ en:'Medium-Duty Shelving', he:'מדפים לעומס בינוני' }, sub:{ en:'Steel shelving for medium loads, in five widths, two heights and four layouts.', he:'מידוף פלדה לעומס בינוני, בחמישה רוחבים, שני גבהים וארבע תצורות חיבור.' }, media:'SHELVING PHOTO', img:'assets/shelving/shelf-cover.webp' },
   { id:'shutter', name:{ en:'Shutter Cabinets', he:'ארונות תריס' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'SHUTTER CABINET PHOTO' },
   { id:'wire', name:{ en:'Wire Shelving', he:'מדפי רשת' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'WIRE SHELVING PHOTO' },
   { id:'premium', name:{ en:'Premium Shelving (La Fortezza)', he:'מדפי פרימיום (לה פורטצה)' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'PREMIUM SHELVING PHOTO' }
@@ -1400,7 +1400,7 @@ class Component extends DCLogic {
     if (!blocked && ['industrial','family','product'].includes(R.page)) {
       crumbs.push({ label:L.industrialCatalog, r:{ page:'industrial' } });
       if (R.page === 'family') crumbs.push({ label:this.tr(famOf(R.id)?.name) });
-      if (R.page === 'product') { const f = famOf(prodData.fam); crumbs.push({ label:this.tr(f.name), r:{ page:'family', id:f.id } }); const cv = (prodData.variants || []).find(v => v.sku === R.v) || (prodData.variants || [])[0]; crumbs.push({ label:this.tr(cv ? cv.name : prodData.name) }); }
+      if (R.page === 'product') { const f = famOf(prodData.fam); if (!f.direct) crumbs.push({ label:this.tr(f.name), r:{ page:'family', id:f.id } }); const cv = (prodData.variants || []).find(v => v.sku === R.v) || (prodData.variants || [])[0]; crumbs.push({ label:this.tr(cv ? cv.name : prodData.name) }); }
       if (R.page === 'industrial') crumbs.length = 0;
     }
     const crumbVals = crumbs.map((c, i) => ({ label:c.label, go:c.r ? go(c.r) : undefined, fg:c.r ? 'var(--muted)' : 'var(--primary)', fw:c.r ? 500 : 600, cur:c.r ? undefined : 'page', sep:i < crumbs.length - 1 ? '/' : '' }));
@@ -1408,7 +1408,7 @@ class Component extends DCLogic {
     // families
     const famCount = f => Object.values(PRODUCTS).filter(p => p.fam === f.id).length;
     const families = FAMILIES.map(f => { const c = famCount(f); const pending = f.id !== 'rav-ta' && f.id !== 'picking';
-      return { name:this.tr(f.name), media:f.media, img:f.id === 'rav-ta' ? 'assets/tiltbin-cover-v2.webp' : (f.img || null), count: f.id === 'rav-ta' ? `6 ${L.sizes} · ${L.sku} 2020–2090` : c ? `${c} ${L.products}` : '', pending, go:go({ page:'family', id:f.id }) }; });
+      return { name:this.tr(f.name), media:f.media, img:f.id === 'rav-ta' ? 'assets/tiltbin-cover-v2.webp' : (f.img || null), count: f.id === 'rav-ta' ? `6 ${L.sizes} · ${L.sku} 2020–2090` : c ? `${c} ${L.products}` : '', pending, go:go(f.direct ? { page:'product', id:f.direct } : { page:'family', id:f.id }) }; });
     const q = s.query.trim().toLowerCase();
     const results = [];
     if (q) {
