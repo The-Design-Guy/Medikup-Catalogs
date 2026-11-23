@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>MEDIKUP</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="utf-8">
+<title>MEDIKUP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 </head>
@@ -555,6 +554,13 @@ button{cursor:pointer}
             </div>
             <button onClick="{{ pNext }}" aria-label="{{ L.next }}" style="flex:0 0 40px;width:40px;height:48px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer;opacity:{{ pNextOp }};pointer-events:{{ pNextPe }};transition:opacity 160ms, color 160ms" style-hover="color:var(--primary)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ pChevEnd }}"><path d="M15 6l-6 6 6 6"></path></svg></button>
             </div>
+          <sc-if value="{{ prod.hasGal }}" hint-placeholder-val="{{ false }}">
+            <div role="group" aria-label="{{ prod.title }}" style="display:flex;justify-content:center;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px">
+              <sc-for list="{{ prod.gal }}" as="gp" hint-placeholder-count="3">
+                <button onClick="{{ gp.go }}" aria-label="{{ gp.aria }}" aria-pressed="{{ gp.on }}" style="flex:0 0 64px;width:64px;aspect-ratio:4/5;border:1.5px solid {{ gp.bd }};border-radius:8px;background:var(--bg) center / contain no-repeat url({{ gp.src }});padding:0;cursor:pointer;transition:border-color 160ms" style-hover="border-color:var(--primary)"></button>
+              </sc-for>
+            </div>
+          </sc-if>
           </sc-if>
           <sc-if value="{{ prod.single }}" hint-placeholder-val="{{ true }}">
           <div style="position:relative;aspect-ratio:{{ prod.singleAr }};border-radius:var(--r);background:radial-gradient(120% 90% at 50% 45%,var(--bg) 0%,var(--surface) 72%);overflow:hidden">
@@ -919,7 +925,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v001';
+const APP_VER = 'v002';
 const KEY = 'medikup-proto-v1';
 const DEF_THEME = { primary:'#006197', accent:'#00AEA9', ink:'#1D2327', muted:'#5B6770', bg:'#FFFFFF', surface:'#F4F6F7', line:'#E2E6E9', font:'Heebo', wH1:800, wH2:700, wH3:600, radius:16, btn:'rounded', shadow:'soft', density:'regular' };
 const PRESETS = [
@@ -956,7 +962,7 @@ const RAV = [
   { n:5, sku:'2050', w:60.1, h:16.3, d:13.6, ml:1037, kg:2 },
   { n:6, sku:'2060', w:60.1, h:11.25, d:9.4, ml:369, kg:0.9 },
   { n:9, sku:'2090', w:60.1, h:7.65, d:6.45, ml:100, kg:null }
-].map(v => ({ ...v, img:'assets/tilt-bin-v2-' + v.n + '.webp' + (v.n === 5 ? '?v=2' : ''), diagram:'assets/vec-tilt-bin-' + v.n + '.svg', vis:(v.w + 0.586 * v.d) / v.w }));
+].map(v => ({ ...v, img:'assets/tilt-bin-v2-' + v.n + '.webp' + (v.n === 5 ? '?v=2' : ''), diagram:'assets/vec-tilt-bin-' + v.n + '.svg', gal:['empty','industrial','hitech'].map(k => 'assets/tilt-bin-' + v.n + '-' + k + '.webp'), vis:(v.w + 0.586 * v.d) / v.w }));
 const DIM = {"2":{"E":[70.47,198.76],"D":[272.02,311.44],"C":[350.54,267.34],"B":[350.54,156.36]},"3":{"E":[64.14,178.39],"D":[292.19,306.08],"C":[351.21,272.94],"B":[351.21,189.53]},"4":{"E":[60.3,155.24],"D":[304.36,292.01],"C":[351.64,265.46],"B":[351.64,198.64]},"5":{"E":[57.83,144.33],"D":[312.42,287.07],"C":[351.83,264.94],"B":[351.83,209.24]},"6":{"E":[55.96,136.51],"D":[318.26,283.62],"C":[352.08,264.63],"B":[352.08,216.84]},"9":{"E":[52.77,122.45],"D":[328.64,277.26],"C":[352.32,263.96],"B":[352.32,230.49]}};
 function dimSvg(n, L) {
   const g = DIM[n]; if (!g) return null;
@@ -992,16 +998,24 @@ const SYS = [
   ['stand-1','Single-Sided Stand','מעמד חד צדדי','compatible'],
   ['wall-rail','Wall Rail','מתלה קיר','compatible']
 ];
+const RAV_DESC_HE = {
+  2:'דגם בעל שני תאים רחבים, המיועד לארגון פריטים בעלי נפח משמעותי יחסית. מתאים לחלקי חילוף, אביזרי התקנה ורכיבים הדורשים שטח אחסון גדול יותר לכל פריט.',
+  3:'שלושה תאים מרווחים המאפשרים לאחסן רכיבים בינוניים, אביזרי תחזוקה וחלקי חילוף תוך הפרדה ברורה בין סוגי הפריטים.',
+  4:'ארבעה תאים המאפשרים ארגון נוח של רכיבים קטנים ובינוניים. מתאים לסביבות עבודה שבהן נדרשת גישה מהירה למספר סוגי פריטים.',
+  5:'חמישה תאים המאפשרים להפריד בין סוגים שונים של מחברים, אביזרי התקנה וחלקי חילוף קטנים. מתאים לעמדות הרכבה, תחזוקה ומלאי טכני.',
+  6:'שישה תאים המיועדים לארגון פריטים קטנים כגון ברגים, אומים, שייבות ורכיבי הרכבה. החלוקה מאפשרת להחזיק מספר סוגי פריטים בנפרד ובמקום מוגדר.',
+  9:'תשעה תאים קטנים המאפשרים מיון של רכיבים זעירים, מחברים קטנים ופריטים הדורשים הפרדה מדויקת בין סוגים או מידות.'
+};
 const PRODUCTS = {
   'rav-ta': { id:'rav-ta', fam:'rav-ta', name:{ en:'Tilt Bins', he:'ארגזי רב תא' },
     desc:{ en:'Light-grey housing with clear tilt-out bins, in six sizes. Every size is 60.1 cm wide; height and depth step down from Tilt Bin 2 to Tilt Bin 9.', he:'גוף אפור בהיר עם תאים שקופים נפתחים, בשישה גדלים. כל הגדלים ברוחב 60.1 ס״מ; הגובה והעומק קטנים מרב תא 2 ועד רב תא 9.' },
     color:{ en:'Light grey · RAL 7035', he:'אפור בהיר · RAL 7035' },
-    variants: RAV.map(v => ({ ...v, name:{ en:'Tilt Bin ' + v.n, he:'רב תא ' + v.n } })),
+    variants: RAV.map(v => ({ ...v, name:{ en:'Tilt Bin ' + v.n, he:'רב תא ' + v.n }, descHe:RAV_DESC_HE[v.n] })),
     features:[
-      { title:{ en:'Dust-proof', he:'אטום לאבק' }, body:{ en:'Closed bins keep dust and dirt away from the stored contents.', he:'התאים הסגורים שומרים על התכולה מפני אבק ולכלוך.' }, img:'assets/feat-dustproof.webp', ic:'assets/ic-dust-proof.svg' },
+      { title:{ en:'Dust-proof', he:'הגנה על התכולה' }, body:{ en:'Closed bins keep dust and dirt away from the stored contents.', he:'המבנה הסגור של התאים מסייע בהפחתת חשיפת הפריטים לאבק בסביבת העבודה, תוך שמירה על נגישות נוחה.' }, img:'assets/feat-dustproof.webp', ic:'assets/ic-dust-proof.svg' },
       { title:{ en:'Locking bar', he:'מנגנון נעילה' }, body:{ en:'A metal bar runs across the front of the unit and holds every bin closed, so contents stay put when the unit is moved.', he:'מוט מתכת לרוחב חזית היחידה נועל את כל התאים במצב סגור, כך שהתכולה נשארת במקומה גם בהזזה.' }, img:'assets/feat-lock-bar.webp', ic:'assets/ic-lock.svg' },
       { title:{ en:'Wall mounting', he:'תלייה על קיר' }, body:{ en:'Keyhole slots on the back panel let the unit hang directly on a wall, vertically or horizontally.', he:'חורי תלייה בגב היחידה מאפשרים לתלות אותה ישירות על הקיר, לאורך או לרוחב.' }, img:'assets/feat-wall-mount.webp', ic:'assets/ic-wall-mount-v2.svg' },
-      { title:{ en:'Stackable', he:'העמסה זה על זה' }, body:{ en:'Units stack securely on top of one another, so storage grows upward without extra floor or wall space.', he:'היחידות נערמות בבטחה זו על גבי זו, כך שאפשר להרחיב את האחסון כלפי מעלה בלי שטח רצפה או קיר נוסף.' }, img:'assets/feat-stacking.webp', ic:'assets/ic-stackable.svg' }
+      { title:{ en:'Stackable', he:'ניצול יעיל של שטח האחסון' }, body:{ en:'Units stack securely on top of one another, so storage grows upward without extra floor or wall space.', he:'המבנה המודולרי מאפשר שילוב וערימה של יחידות, לצד התקנה במערכות קיר ובמתקנים ייעודיים.' }, img:'assets/feat-stacking.webp', ic:'assets/ic-stackable.svg' }
     ],
     projects:['p1'] }
 };
@@ -1030,7 +1044,7 @@ SYS.forEach(([id,en,he,rel]) => { PRODUCTS[id] = { opts:(SYS_OPTS[id] || {}).opt
 [1,2,3,4].forEach(n => { PRODUCTS['picking-' + n] = { id:'picking-' + n, fam:'picking', name:{ en:'Picking Bin ' + n, he:'ארקלית ' + n }, img:'assets/picking-bin-' + n + '.webp', gallery:['assets/picking-bin-' + n + '.webp'], projects:[] }; });
 PRODUCTS['shutter-4'] = { id:'shutter-4', fam:'shutter', name:{ en:'Shutter Cabinet, 4 Shelves', he:'ארון תריס 4 מדפים' }, pending:true, projects:[] };
 const FAMILIES = [
-  { id:'rav-ta', name:{ en:'Tilt Bins', he:'רב תא' }, sub:{ en:'Modular storage units with clear tilt-out bins, in six sizes, all 60 cm wide.', he:'יחידות אחסון מודולריות עם תאים שקופים נפתחים, בשישה גדלים, כולם ברוחב 60 ס״מ.' }, media:'TILT BINS FAMILY PHOTO' },
+  { id:'rav-ta', name:{ en:'Tilt Bins', he:'רב תא' }, sub:{ en:'Modular storage units with clear tilt-out bins, in six sizes, all 60 cm wide.', he:'פתרונות אחסון מודולריים לפריטים קטנים, רכיבים וחלקי חילוף. תאים שקופים, מגוון גדלים ואפשרויות התקנה המאפשרים לשמור על סביבת עבודה מסודרת ונגישה.' }, media:'TILT BINS FAMILY PHOTO' },
   { id:'rav-ta-systems', name:{ en:'Tilt Bin Cabinets & Stands', he:'ארונות ומעמדי רב תא' }, sub:{ en:'Systems listed in the product sheet. SKUs, dimensions and photos are still missing.', he:'מערכות מטבלת המוצרים. מק״טים, מידות ותמונות חסרים.' }, media:'CABINETS & STANDS PHOTO' },
   { id:'picking', name:{ en:'Picking Bins', he:'ארקליות' }, sub:{ en:'Stackable open-front picking bins in four sizes.', he:'ארקליות פתוחות מלפנים, ניתנות להערמה, בארבעה גדלים.' }, media:'PICKING BINS PHOTO', img:'assets/picking-bins-cover.webp' },
   { id:'shutter', name:{ en:'Shutter Cabinets', he:'ארונות תריס' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'SHUTTER CABINET PHOTO' },
@@ -1110,7 +1124,7 @@ class Component extends DCLogic {
   commit(draft) { this.hist.push(this.state.draft); if (this.hist.length > 80) this.hist.shift(); this.setState({ draft }); this.persist({ draft }); }
   go(route) {
     this.setState({ route, menu: false, pop: null, thumb: 0, copied: false });
-    try { history.replaceState(null, '', '#' + this.routeHash(route)); } catch (e) {}
+    try { history.replaceState(null, '', '#' + (this.state.site ? 'site' : '') + this.routeHash(route)); } catch (e) {}
     const top = () => { if (this._cv) this._cv.scrollTop = 0; window.scrollTo(0, 0); if (document.scrollingElement) document.scrollingElement.scrollTop = 0; };
     top(); requestAnimationFrame(top);
     if (route.page === 'product') setTimeout(() => this.pScrollTo(true), 60);
@@ -1230,17 +1244,18 @@ class Component extends DCLogic {
       prod.title = cur ? this.tr(cur.name) : this.tr(p.name);
       prod.famName = this.tr(f.name); prod.goFam = go({ page:'family', id:f.id });
       prod.hasSku = !!cur; prod.sku = cur ? cur.sku : '';
-      prod.desc = p.desc ? this.tr(p.desc) : (lang === 'he' ? 'מק״ט, מידות, תמונות ותיאור ממתינים לנתוני MEDIKUP.' : 'SKU, dimensions, photos and description are awaiting MEDIKUP product data.');
+      prod.desc = cur && cur.descHe && lang === 'he' ? cur.descHe : p.desc ? this.tr(p.desc) : (lang === 'he' ? 'מק״ט, מידות, תמונות ותיאור ממתינים לנתוני MEDIKUP.' : 'SKU, dimensions, photos and description are awaiting MEDIKUP product data.');
       prod.descFallback = lang === 'he' && p.desc && !p.desc.he;
       prod.hasVariants = vs.length > 0; prod.carousel = vs.length > 1; prod.single = !prod.carousel; prod.slides = vs.map((v, i) => ({ zoom:() => this.setState({ lb:{ src:v.img, alt:this.tr(v.name) } }), src:v.img, alt:this.tr(v.name), ol:'none', snap:i === vs.length - 1 ? 'end' : 'start' }));
-      const cmb = p.combos ? this.comboOf(p) : null, pgal = cmb ? cmb.gal : p.gallery, gid = p.id + (cmb ? '|' + JSON.stringify(cmb.sel) : '');
+      const cmb = p.combos ? this.comboOf(p) : null, pgal = cmb ? cmb.gal : (cur && cur.gal) || p.gallery, gid = p.id + (cmb ? '|' + JSON.stringify(cmb.sel) : cur ? '|' + cur.sku : '');
       prod.opts = cmb ? p.opts.map(o => ({ label:this.tr(o.label), vals:o.vals.map(ov => { const on = cmb.sel[o.k] === ov.v; const ok = p.combos.some(c => c.sel[o.k] === ov.v && Object.keys(c.sel).every(k => k === o.k || c.sel[k] === cmb.sel[k])); return { label:this.tr(ov.label), on, bg:on ? 'var(--primary)' : 'var(--bg)', fg:on ? '#fff' : (ok ? 'var(--ink)' : 'var(--muted)'), bd:on ? 'var(--primary)' : 'var(--line)', bs:ok || on ? 'solid' : 'dashed', go:() => this.pickOpt(p, o.k, ov.v) }; }) })) : [];
       prod.hasOpts = prod.opts.length > 0;
       const gi = pgal && s.gal && s.gal.id === gid ? Math.min(s.gal.i, pgal.length - 1) : 0;
       prod.gal = (pgal || []).length > 1 ? pgal.map((src, i) => ({ src, on:i === gi, bd:i === gi ? 'var(--primary)' : 'var(--line)', aria:this.tr(p.name) + ' ' + (i + 1), go:() => this.setState({ gal:{ id:gid, i } }) })) : [];
       prod.hasGal = prod.gal.length > 0;
+      if (cur && cur.gal) prod.slides = (prod.slides || []).map((sl, i) => vs[i] === cur ? { ...sl, src:cur.gal[gi] } : sl);
       prod.hasPhoto = !!cur; prod.noPhoto = !cur && !pgal && !p.img; prod.singleAr = vs.length ? '5/4' : '4/5';
-      if (cur) { prod.photo = cur.img; prod.photoAlt = this.tr(cur.name) + ' — ' + this.tr(p.color); prod.diagram = cur.diagram; prod.diagramAlt = (lang === 'he' ? 'איור טכני של ' : 'Technical illustration of ') + this.tr(cur.name); }
+      if (cur) { prod.photo = cur.gal ? cur.gal[gi] : cur.img; prod.photoAlt = this.tr(cur.name) + ' — ' + this.tr(p.color); prod.diagram = cur.diagram; prod.diagramAlt = (lang === 'he' ? 'איור טכני של ' : 'Technical illustration of ') + this.tr(cur.name); }
       prod.photos = (cur ? [{ src:prod.photo, alt:prod.photoAlt }] : pgal ? [{ src:pgal[gi], alt:this.tr(p.name) + ' — ' + (gi + 1) + '/' + pgal.length }] : p.img ? [{ src:p.img, alt:this.tr(p.name) }] : []).map(ph => ({ ...ph, canZoom:p.fam === 'rav-ta-systems', zoom:() => this.setState({ lb:{ src:ph.src, alt:ph.alt } }) })); if (!cur && p.img) { prod.hasPhoto = true; prod.noPhoto = false; } prod.dimSvg = cur ? dimSvg(cur.n, L) : null; prod.diagrams = cur ? [{ src:prod.diagram, alt:prod.diagramAlt }] : [];
       prod.color = this.tr(p.color);
       prod.variants = vs.map(v => { const on = v === cur; return { label:this.tr(v.name), on, go:go({ page:'product', id:p.id, v:v.sku }), img:v.img, lw:(v.vis / VIS_MAX * 86).toFixed(2) + '%', ar:AR[v.n], bd:on ? 'var(--primary)' : 'var(--line)', bdw:'1px', bg:on ? 'var(--surface)' : 'var(--bg)' }; });
