@@ -929,7 +929,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v004';
+const APP_VER = 'v005';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
 const DEF_THEME = { primary:'#006197', accent:'#00AEA9', ink:'#1D2327', muted:'#5B6770', bg:'#FFFFFF', surface:'#F4F6F7', line:'#E2E6E9', font:'Heebo', wH1:800, wH2:700, wH3:600, radius:16, btn:'rounded', shadow:'soft', density:'regular' };
@@ -1052,11 +1052,22 @@ const SYS_IMG = {}; Object.keys(SYS_GAL).forEach(k => { const g = SYS_GAL[k]; SY
 SYS.forEach(([id,en,he,rel]) => { PRODUCTS[id] = { opts:(SYS_OPTS[id] || {}).opts || null, combos:(SYS_OPTS[id] || {}).combos || null, img:SYS_IMG[id] || null, gallery:SYS_GAL[id] || null, features:SYS_FEAT[id] || [], dims:SYS_DIM[id] || null, color: id === 'smart' ? { en:'Blue', he:'כחול' } : { en:'Light grey', he:'אפור בהיר' }, id, fam:'rav-ta-systems', name:{ en, he }, pending:true, rel, basedOn: rel === 'derived' ? 'rav-ta' : null, projects: id === 'wall-rail-120' ? ['p1'] : [] }; });
 [['wall-rail-60','wall-rail',{ w:'60' }],['wall-rail-120','wall-rail',{ w:'120' }],['wall-rail-200','wall-rail',{ w:'200' }],['stand-low','stand-1',{ h:'116' }],['stand-high','stand-1',{ h:'180' }]].forEach(([o,n]) => { PRODUCTS[o] = { ...PRODUCTS[n], fam:null }; });
 [1,2,3,4].forEach(n => { PRODUCTS['picking-' + n] = { id:'picking-' + n, fam:'picking', name:{ en:'Picking Bin ' + n, he:'ארקלית ' + n }, img:'assets/picking-bin-' + n + '.webp', gallery:['assets/picking-bin-' + n + '.webp'], projects:[] }; });
+// Medium-duty shelving: one product, 5 widths x 2 heights x 4 layouts (photos: assets/shelving/, see README)
+const SHELF = { w:['120','150','180','210','240'], h:['200','250'], cfg:[['single', 'Single unit', 'יחידה בודדת'], ['row2', '2 units in a row', '2 יחידות בשורה'], ['b2b', 'Back to back', 'גב אל גב'], ['corner', '90° corner', 'פינה 90°']] };
+PRODUCTS['shelf-md'] = { id:'shelf-md', fam:'shelf-md', name:{ en:'Medium-Duty Shelving', he:'מידוף לעומס בינוני' }, pending:true, projects:[], features:[],
+  img:'assets/shelving/shelf-120-200-single.webp',
+  opts:[
+    { k:'w', label:{ en:'Width', he:'רוחב' }, vals:SHELF.w.map(v => ({ v, label:{ en:v + ' cm', he:v + ' ס״מ' } })) },
+    { k:'h', label:{ en:'Height', he:'גובה' }, vals:SHELF.h.map(v => ({ v, label:{ en:v + ' cm', he:v + ' ס״מ' } })) },
+    { k:'c', label:{ en:'Layout', he:'חיבור' }, vals:SHELF.cfg.map(([v, en, he]) => ({ v, label:{ en, he } })) }
+  ],
+  combos:SHELF.w.flatMap(w => SHELF.h.flatMap(h => SHELF.cfg.map(([c]) => ({ sel:{ w, h, c }, gal:['assets/shelving/shelf-' + w + '-' + h + '-' + c + '.webp'] })))) };
 PRODUCTS['shutter-4'] = { id:'shutter-4', fam:'shutter', name:{ en:'Shutter Cabinet, 4 Shelves', he:'ארון תריס 4 מדפים' }, pending:true, projects:[] };
 const FAMILIES = [
   { id:'rav-ta', name:{ en:'Tilt Bins', he:'רב תא' }, sub:{ en:'Modular storage units with clear tilt-out bins, in six sizes, all 60 cm wide.', he:'פתרונות אחסון מודולריים לפריטים קטנים, רכיבים וחלקי חילוף. תאים שקופים, מגוון גדלים ואפשרויות התקנה המאפשרים לשמור על סביבת עבודה מסודרת ונגישה.' }, media:'TILT BINS FAMILY PHOTO' },
   { id:'rav-ta-systems', name:{ en:'Tilt Bin Cabinets & Stands', he:'ארונות ומעמדי רב תא' }, sub:{ en:'Systems listed in the product sheet. SKUs, dimensions and photos are still missing.', he:'מערכות מטבלת המוצרים. מק״טים, מידות ותמונות חסרים.' }, media:'CABINETS & STANDS PHOTO' },
   { id:'picking', name:{ en:'Picking Bins', he:'ארקליות' }, sub:{ en:'Stackable open-front picking bins in four sizes.', he:'ארקליות פתוחות מלפנים, ניתנות להערמה, בארבעה גדלים.' }, media:'PICKING BINS PHOTO', img:'assets/picking-bins-cover.webp' },
+  { id:'shelf-md', name:{ en:'Medium-Duty Shelving', he:'מדפים לעומס בינוני' }, sub:{ en:'Steel shelving for medium loads, in five widths, two heights and four layouts.', he:'מידוף פלדה לעומס בינוני, בחמישה רוחבים, שני גבהים וארבע תצורות חיבור.' }, media:'SHELVING PHOTO', img:'assets/shelving/shelf-cover.webp' },
   { id:'shutter', name:{ en:'Shutter Cabinets', he:'ארונות תריס' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'SHUTTER CABINET PHOTO' },
   { id:'wire', name:{ en:'Wire Shelving', he:'מדפי רשת' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'WIRE SHELVING PHOTO' },
   { id:'premium', name:{ en:'Premium Shelving (La Fortezza)', he:'מדפי פרימיום (לה פורטצה)' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'PREMIUM SHELVING PHOTO' }
@@ -1148,8 +1159,8 @@ class Component extends DCLogic {
   componentDidUpdate() { const b = this.state.route || {}; const key = b.page === 'product' ? b.id + '|' + (this._pc ? this._pc.gid + '|' + this._pc.idx : '') : ''; const prev = this._pKey; this._pKey = key; if (!prev || !key || prev === key || prev.split('|')[0] !== b.id) return; if (this._pSwipe) this._pSwipe = false; else this.pScrollTo(true); }
   get cfg() { return this.state.site ? this.state.published : this.state.draft; }
   get viewAs() { return this.state.site ? 'public' : this.state.viewAs; }
-  comboOf(p) { const s = this.state; const sel = s.osel && s.osel.id === p.id ? s.osel.sel : null; return (sel && p.combos.find(c => Object.keys(c.sel).every(k => c.sel[k] === sel[k]))) || p.combos[0]; }
-  pickOpt(p, k, v) { const cur = this.comboOf(p).sel; const want = { ...cur, [k]:v }; const c = p.combos.find(x => Object.keys(x.sel).every(q => x.sel[q] === want[q])) || p.combos.find(x => x.sel[k] === v); if (c) this.setState({ osel:{ id:p.id, sel:c.sel } }); }
+  comboOf(p) { const s = this.state, r = s.route || {}; const fromUrl = r.id === p.id && r.v ? Object.fromEntries(p.opts.map((o, i) => [o.k, r.v.split('-')[i]])) : null; const sel = fromUrl || (s.osel && s.osel.id === p.id ? s.osel.sel : null); return (sel && p.combos.find(c => Object.keys(c.sel).every(k => c.sel[k] === sel[k]))) || p.combos[0]; }
+  pickOpt(p, k, v) { const cur = this.comboOf(p).sel; const want = { ...cur, [k]:v }; const c = p.combos.find(x => Object.keys(x.sel).every(q => x.sel[q] === want[q])) || p.combos.find(x => x.sel[k] === v); if (!c) return; const nr = { ...this.state.route, v:p.opts.map(o => c.sel[o.k]).join('-') }; this.setState({ osel:{ id:p.id, sel:c.sel }, route:nr }); try { history.replaceState(null, '', '#' + (this.state.site ? 'site' : '') + this.routeHash(nr)); } catch (e) {} }
   vis(id) { const s = this.cfg.flags[id]; return s === 'public' || (s === 'private' && this.viewAs === 'admin'); }
   isPriv(id) { return this.cfg.flags[id] === 'private'; }
   get touch() { return this.device !== 'Desktop'; }
@@ -1277,7 +1288,7 @@ class Component extends DCLogic {
       this._pc = cur && cur.gal ? { mode:'gal', gid, n:cur.gal.length, idx:gi } : { mode:'var', gid, n:vs.length, idx:Math.max(0, vs.indexOf(cur)) };
       prod.hasPhoto = !!cur; prod.noPhoto = !cur && !pgal && !p.img; prod.singleAr = vs.length ? '5/4' : '4/5';
       if (cur) { prod.photo = cur.gal ? cur.gal[gi] : cur.img; prod.photoAlt = this.tr(cur.name) + ' — ' + this.tr(p.color); prod.diagram = cur.diagram; prod.diagramAlt = (lang === 'he' ? 'איור טכני של ' : 'Technical illustration of ') + this.tr(cur.name); }
-      prod.photos = (cur ? [{ src:prod.photo, alt:prod.photoAlt }] : pgal ? pgal.map((src, j) => ({ src, alt:this.tr(p.name) + ' — ' + (j + 1) + '/' + pgal.length, on:j === gi })) : p.img ? [{ src:p.img, alt:this.tr(p.name) }] : []).map(ph => ({ ...ph, op:ph.on === false ? 0 : 1, hid:ph.on === false ? 'true' : undefined, canZoom:p.fam === 'rav-ta-systems' && ph.on !== false, zoom:() => this.setState({ lb:{ src:ph.src, alt:ph.alt } }) })); if (!cur && p.img) { prod.hasPhoto = true; prod.noPhoto = false; } prod.dimSvg = cur ? dimSvg(cur.n, L) : null; prod.diagrams = cur ? [{ src:prod.diagram, alt:prod.diagramAlt }] : [];
+      prod.photos = (cur ? [{ src:prod.photo, alt:prod.photoAlt }] : pgal ? pgal.map((src, j) => ({ src, alt:this.tr(p.name) + ' — ' + (j + 1) + '/' + pgal.length, on:j === gi })) : p.img ? [{ src:p.img, alt:this.tr(p.name) }] : []).map(ph => ({ ...ph, op:ph.on === false ? 0 : 1, hid:ph.on === false ? 'true' : undefined, canZoom:(p.fam === 'rav-ta-systems' || p.fam === 'shelf-md') && ph.on !== false, zoom:() => this.setState({ lb:{ src:ph.src, alt:ph.alt } }) })); if (!cur && p.img) { prod.hasPhoto = true; prod.noPhoto = false; } prod.dimSvg = cur ? dimSvg(cur.n, L) : null; prod.diagrams = cur ? [{ src:prod.diagram, alt:prod.diagramAlt }] : [];
       prod.color = this.tr(p.color);
       prod.variants = vs.map(v => { const on = v === cur; return { label:this.tr(v.name), on, go:go({ page:'product', id:p.id, v:v.sku }), img:v.img, lw:(v.vis / VIS_MAX * 86).toFixed(2) + '%', ar:AR[v.n], bd:on ? 'var(--primary)' : 'var(--line)', bdw:'1px', bg:on ? 'var(--surface)' : 'var(--bg)' }; });
       const thumbLabels = cur ? ['FRONT', 'IN USE', 'DETAIL'] : ['PHOTO 1', 'PHOTO 2'];
