@@ -895,6 +895,86 @@ button{cursor:pointer}
         <span style="font:400 13px var(--font);color:var(--muted)">{{ L.footer }}</span>
       </div>
     </footer>
+    <sc-if value="{{ edGateOn }}" hint-placeholder-val="{{ false }}">
+      <div dir="rtl" style="position:fixed;inset:0;z-index:400;background:rgba(20,26,30,.45);display:flex;align-items:center;justify-content:center;padding:20px">
+        <div role="dialog" aria-label="כניסה למצב עריכה" style="width:min(380px,100%);background:#fff;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:Heebo,sans-serif;color:#1D2327">
+          <strong style="font:700 20px Heebo">מצב עריכה</strong>
+          <span style="font:400 14px/1.5 Heebo;color:#5B6770">השינויים לא עולים לאתר ישירות. הם נשלחים לבדיקה, ו-Claude מיישם אותם בגרסה הבאה.</span>
+          <input type="password" value="{{ edPw }}" onChange="{{ edPwSet }}" placeholder="סיסמה" aria-label="סיסמה" style="height:46px;padding:0 14px;border:1px solid #E2E6E9;border-radius:8px;font:400 16px Heebo">
+          <sc-if value="{{ edHasGateErr }}" hint-placeholder-val="{{ false }}"><span role="alert" style="font:500 13px Heebo;color:#B42318">{{ edGateErr }}</span></sc-if>
+          <div style="display:flex;gap:8px">
+            <button onClick="{{ edGo }}" disabled="{{ edBusy }}" style="flex:1;height:46px;border:0;border-radius:8px;background:#006197;color:#fff;font:600 15px Heebo;cursor:pointer;opacity:{{ edBusyOp }}">כניסה</button>
+            <button onClick="{{ edCloseGate }}" style="height:46px;padding:0 16px;border:1px solid #E2E6E9;border-radius:8px;background:#fff;color:#1D2327;font:500 15px Heebo;cursor:pointer">ביטול</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ edOn }}" hint-placeholder-val="{{ false }}">
+      <div dir="rtl" style="position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:320;display:flex;align-items:center;gap:4px;padding:5px;background:#1D2327;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:Heebo,sans-serif;white-space:nowrap">
+        <span style="font:600 13px Heebo;color:#fff;padding:0 10px">✎ עריכה</span>
+        <button onClick="{{ edTogglePanel }}" style="height:36px;padding:0 12px;border:0;border-radius:8px;background:#00AEA9;color:#fff;font:600 13px Heebo;cursor:pointer">עריכת העמוד</button>
+        <button onClick="{{ edToggleTray }}" style="height:36px;padding:0 12px;border:0;border-radius:8px;background:#fff;color:#1D2327;font:600 13px Heebo;cursor:pointer">בקשה ({{ edCount }})</button>
+        <button onClick="{{ edExit }}" aria-label="יציאה ממצב עריכה" style="height:36px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:#B9C4CC;font:500 13px Heebo;cursor:pointer">יציאה</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ edPanelOn }}" hint-placeholder-val="{{ false }}">
+      <aside dir="rtl" aria-label="עריכת העמוד" style="position:fixed;top:0;bottom:0;left:0;width:min(440px,100%);z-index:310;background:#fff;box-shadow:0 0 40px rgba(0,0,0,.2);display:flex;flex-direction:column;font-family:Heebo,sans-serif;color:#1D2327">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #E2E6E9"><strong style="font:700 18px Heebo">עריכת העמוד</strong><button onClick="{{ edClose }}" aria-label="סגירה" style="width:40px;height:40px;border:0;background:transparent;font:400 22px Heebo;cursor:pointer;color:#1D2327">×</button></div>
+        <div style="flex:1;overflow:auto;padding:8px 18px 140px;display:flex;flex-direction:column;gap:18px">
+          <sc-if value="{{ edOffline }}" hint-placeholder-val="{{ false }}"><div style="font:500 12px/1.5 Heebo;background:#FFF6E5;color:#7A4B00;border-radius:8px;padding:10px 12px;margin-top:8px">השרת עוד לא מוגדר. אפשר לסמן שינויים, אבל השליחה תעבוד רק אחרי ההגדרה ב-Vercel.</div></sc-if>
+          <sc-for list="{{ edGroups }}" as="g" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column">
+              <div style="font:700 12px Heebo;letter-spacing:.04em;color:#5B6770;padding:10px 0 6px;border-bottom:1px solid #1D2327">{{ g.title }}</div>
+              <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #EEF0F2">
+                  <sc-if value="{{ r.hasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ r.thumb }}" alt="" style="flex:0 0 48px;width:48px;height:60px;border-radius:6px;border:1px solid #E2E6E9;background:#fff;object-fit:contain"></sc-if>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                    <span style="font:600 14px Heebo;display:flex;gap:6px;align-items:center">{{ r.label }}<sc-if value="{{ r.pend }}" hint-placeholder-val="{{ false }}"><span style="font:600 10px Heebo;padding:2px 6px;border-radius:4px;background:#E6F6F5;color:#006197">בבקשה</span></sc-if></span>
+                    <span style="font:400 12px/1.4 Heebo;color:#5B6770;overflow-wrap:anywhere">{{ r.sub }}</span>
+                  </div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+                    <sc-for list="{{ r.btns }}" as="b" hint-placeholder-count="1"><button onClick="{{ b.go }}" style="height:32px;padding:0 10px;border:1px solid #E2E6E9;border-radius:8px;background:#fff;color:#1D2327;font:500 12px Heebo;cursor:pointer">{{ b.label }}</button></sc-for>
+                    <sc-if value="{{ r.file }}" hint-placeholder-val="{{ false }}"><label style="height:32px;padding:0 10px;border:1px solid #006197;border-radius:8px;background:#fff;color:#006197;font:600 12px Heebo;cursor:pointer;display:inline-flex;align-items:center">{{ r.fileLabel }}<input type="file" accept="image/*" onChange="{{ r.onFile }}" style="display:none"></label></sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div style="font:400 13px/1.5 Heebo;color:#5B6770;background:#F4F6F7;border-radius:8px;padding:12px">משהו שלא מופיע כאן? כתוב אותו במגש הבקשה ("בקשה") בשדה ההערה החופשית.</div>
+        </div>
+      </aside>
+    </sc-if>
+    <sc-if value="{{ edTrayOn }}" hint-placeholder-val="{{ false }}">
+      <aside dir="rtl" aria-label="בקשת שינויים" style="position:fixed;top:0;bottom:0;left:0;width:min(440px,100%);z-index:310;background:#fff;box-shadow:0 0 40px rgba(0,0,0,.2);display:flex;flex-direction:column;font-family:Heebo,sans-serif;color:#1D2327">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #E2E6E9"><strong style="font:700 18px Heebo">בקשת שינויים ({{ edCount }})</strong><button onClick="{{ edClose }}" aria-label="סגירה" style="width:40px;height:40px;border:0;background:transparent;font:400 22px Heebo;cursor:pointer;color:#1D2327">×</button></div>
+        <div style="flex:1;overflow:auto;padding:8px 18px 140px;display:flex;flex-direction:column;gap:12px">
+          <sc-if value="{{ edEmpty }}" hint-placeholder-val="{{ false }}"><span style="font:400 14px Heebo;color:#5B6770;padding:12px 0">עוד אין שינויים. פתח את "עריכת העמוד" בכל עמוד שתרצה לשנות.</span></sc-if>
+          <sc-for list="{{ edItems }}" as="it" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #EEF0F2">
+              <sc-if value="{{ it.hasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ it.thumb }}" alt="" style="flex:0 0 40px;width:40px;height:50px;border-radius:6px;border:1px solid #E2E6E9;background:#fff;object-fit:contain"></sc-if>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font:600 11px Heebo;color:#006197">{{ it.kind }}</span><span style="font:600 14px Heebo">{{ it.label }}</span><span style="font:400 12px Heebo;color:#5B6770;overflow-wrap:anywhere">{{ it.sub }}</span></div>
+              <button onClick="{{ it.del }}" aria-label="הסרה מהבקשה" style="width:32px;height:32px;border:0;background:transparent;color:#B42318;font:600 18px Heebo;cursor:pointer">×</button>
+            </div>
+          </sc-for>
+          <label style="display:flex;flex-direction:column;gap:6px;font:600 14px Heebo;margin-top:8px">הערה חופשית ל-Claude
+            <textarea value="{{ edNote }}" onChange="{{ edNoteSet }}" rows="4" placeholder="למשל: הקטגוריה X מופיעה בטעות; לתקן את המידה של Y…" style="font:400 14px/1.5 Heebo;padding:10px 12px;border:1px solid #E2E6E9;border-radius:8px;resize:vertical"></textarea>
+          </label>
+          <sc-if value="{{ edHasImgs }}" hint-placeholder-val="{{ false }}"><span style="font:400 12px Heebo;color:#7A4B00">תמונות נשמרות רק עד שסוגרים את הדף. כדאי לשלוח לפני שסוגרים.</span></sc-if>
+          <sc-if value="{{ edMsgOn }}" hint-placeholder-val="{{ false }}"><div role="status" style="font:500 13px/1.5 Heebo;border-radius:8px;padding:10px 12px;background:{{ edMsgBg }};color:{{ edMsgFg }}">{{ edMsgText }}</div></sc-if>
+          <button onClick="{{ edSend }}" disabled="{{ edBusy }}" style="height:48px;border:0;border-radius:8px;background:#00AEA9;color:#fff;font:600 16px Heebo;cursor:pointer;opacity:{{ edBusyOp }}">שליחה לבדיקה</button>
+        </div>
+      </aside>
+    </sc-if>
+    <sc-if value="{{ edDlgOn }}" hint-placeholder-val="{{ false }}">
+      <div dir="rtl" style="position:fixed;inset:0;z-index:420;background:rgba(20,26,30,.45);display:flex;align-items:center;justify-content:center;padding:20px">
+        <div role="dialog" aria-label="{{ edDlgLabel }}" style="width:min(520px,100%);background:#fff;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:Heebo,sans-serif;color:#1D2327">
+          <strong style="font:700 18px Heebo">{{ edDlgLabel }}</strong>
+          <label style="display:flex;flex-direction:column;gap:6px;font:600 13px Heebo">עברית<textarea value="{{ edDlgHe }}" onChange="{{ edDlgSetHe }}" rows="3" style="font:400 15px/1.5 Heebo;padding:10px 12px;border:1px solid #E2E6E9;border-radius:8px;resize:vertical"></textarea></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font:600 13px Heebo">English<textarea dir="ltr" value="{{ edDlgEn }}" onChange="{{ edDlgSetEn }}" rows="3" style="font:400 15px/1.5 Heebo;padding:10px 12px;border:1px solid #E2E6E9;border-radius:8px;resize:vertical"></textarea></label>
+          <div style="display:flex;gap:8px"><button onClick="{{ edDlgSave }}" style="flex:1;height:44px;border:0;border-radius:8px;background:#006197;color:#fff;font:600 15px Heebo;cursor:pointer">הוספה לבקשה</button><button onClick="{{ edDlgCancel }}" style="height:44px;padding:0 16px;border:1px solid #E2E6E9;border-radius:8px;background:#fff;color:#1D2327;font:500 15px Heebo;cursor:pointer">ביטול</button></div>
+        </div>
+      </div>
+    </sc-if>
     <sc-if value="{{ isTouch }}" hint-placeholder-val="{{ false }}">
       <div style="position:sticky;bottom:0;z-index:35;background:#F6F8F9;border-top:1px solid var(--line);padding:10px var(--m) calc(10px + env(safe-area-inset-bottom))">
         <div style="display:flex;gap:10px;align-items:center">
@@ -929,9 +1009,10 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v005';
+const APP_VER = 'v006';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
+const EDIT_KEY = 'medikup-edits-v1';
 const DEF_THEME = { primary:'#006197', accent:'#00AEA9', ink:'#1D2327', muted:'#5B6770', bg:'#FFFFFF', surface:'#F4F6F7', line:'#E2E6E9', font:'Heebo', wH1:800, wH2:700, wH3:600, radius:16, btn:'rounded', shadow:'soft', density:'regular' };
 const PRESETS = [
   { name:'MEDIKUP', t:{ primary:'#006197', accent:'#00AEA9', ink:'#1D2327', muted:'#5B6770', bg:'#FFFFFF', surface:'#F4F6F7', line:'#E2E6E9' } },
@@ -1114,7 +1195,8 @@ class Component extends DCLogic {
       site: h.site, route: h.route, device: saved?.device || 'Desktop', viewAs: 'admin', grid: false, tab: 'theme', scope: 'shared',
       lang: 'he', unit: null, assume: 'mm', sampleFiles: false, query: '', menu: false, thumb: 0, copied: false,
       pop: null, hsEdit: false, hsProduct: 'rav-ta', quote: null, importOpen: false, importErr: '',
-      demo: { customer: 'standard' }, cw: 1200, famTab: 'products', famIdx: 0
+      demo: { customer: 'standard' }, cw: 1200, famTab: 'products', famIdx: 0,
+      edits: (() => { try { return JSON.parse(localStorage.getItem(EDIT_KEY) || '[]'); } catch (e) { return []; } })(), edGate: /[?&]edit\b/.test(location.search)
     };
   }
   parseHash() {
@@ -1140,6 +1222,7 @@ class Component extends DCLogic {
       if (r.page !== 'family' || r.id !== 'rav-ta' || s.famTab !== 'products' || document.hidden || this._reduce) return;
       this.setState({ famTick:(s.famTick || 0) + 1 });
     }, FAM_MS);
+    try { const pw = sessionStorage.getItem(EDIT_KEY + '-pw'); if (pw && this.state.edGate) this.setState({ edPw:pw }, () => this.edAuth()); } catch (e) {}
     window.addEventListener('keydown', this._onKey);
     window.addEventListener('resize', this._onRes);
   }
@@ -1182,7 +1265,99 @@ class Component extends DCLogic {
   get unit() { const def = this.lang === 'he' ? 'metric' : 'imperial'; return this.vis('units') ? (this.state.unit || def) : def; }
   tr(o) { return o ? (o[this.lang] ?? o.en) : ''; }
 
+  // ---------- Edit mode (?edit): collects change requests, sends them to /api/edits for Claude to review ----------
+  edList() { return this.state.edits || []; }
+  edFind(type, target) { return this.edList().find(e => e.type === type && e.target === target); }
+  edSave(list) { this.setState({ edits:list }); try { localStorage.setItem(EDIT_KEY, JSON.stringify(list.filter(e => !e.img))); } catch (e) {} }
+  edPut(e) { this.edSave(this.edList().filter(x => !(x.type === e.type && x.target === e.target)).concat([{ ...e, page:location.hash }])); }
+  edDel(type, target) { this.edSave(this.edList().filter(x => !(x.type === type && x.target === target))); }
+  async edAuth() {
+    const pw = this.state.edPw || '';
+    this.setState({ edGateErr:'', edBusy:true });
+    let st = 0; try { const r = await fetch('/api/edits', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ action:'auth', password:pw }) }); st = r.status; } catch (e) {}
+    if (st === 200) { try { sessionStorage.setItem(EDIT_KEY + '-pw', pw); } catch (e) {} this.setState({ edit:true, edGate:false, edOffline:false, edBusy:false }); }
+    else if (st === 401) this.setState({ edGateErr:'סיסמה שגויה.', edBusy:false });
+    else this.setState({ edit:true, edGate:false, edOffline:true, edBusy:false }); // server not configured yet: edit locally, sending disabled
+  }
+  edImage(file, meta) {
+    if (!file) return;
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, 2000 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      let data = c.toDataURL('image/webp', .9); if (!data.startsWith('data:image/webp')) data = c.toDataURL('image/png');
+      this.edPut({ ...meta, img:data, fileName:file.name });
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); alert('לא הצלחתי לקרוא את הקובץ.'); };
+    img.src = url;
+  }
+  async edSend() {
+    const list = this.edList(), note = this.state.edNote || '';
+    if (!list.length && !note.trim()) return;
+    const images = [], changes = list.map(e => { const { img, ...rest } = e; if (img) { const name = 'img-' + (images.length + 1) + (img.startsWith('data:image/webp') ? '.webp' : '.png'); images.push({ name, data:img.split(',')[1] }); return { ...rest, file:name }; } return rest; });
+    if (images.reduce((a, i) => a + i.data.length, 0) > 3.9 * 1024 * 1024) { this.setState({ edMsg:{ ok:false, text:'הבקשה כבדה מדי (מעל 4MB). שלח קודם חלק מהתמונות, ואת השאר בבקשה נוספת.' } }); return; }
+    let pw = ''; try { pw = sessionStorage.getItem(EDIT_KEY + '-pw') || ''; } catch (e) {}
+    this.setState({ edBusy:true, edMsg:null });
+    let st = 0, j = {}; try { const r = await fetch('/api/edits', { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ password:pw, note, page:location.href, changes, images }) }); st = r.status; j = await r.json().catch(() => ({})); } catch (e) {}
+    if (st === 200) { this.edSave([]); this.setState({ edNote:'', edBusy:false, edMsg:{ ok:true, text:'נשלח לבדיקה (בקשה ' + j.id + '). Claude יעבור על הבקשה, יכין את התמונות ויעלה גרסה חדשה. עד אז האתר לא משתנה.' } }); }
+    else this.setState({ edBusy:false, edMsg:{ ok:false, text:st === 401 ? 'הסיסמה כבר לא תקפה. צא ממצב עריכה והיכנס שוב.' : st === 503 || st === 0 || st === 404 || st === 501 ? 'השרת עוד לא מוגדר (משתני הסביבה ב-Vercel). השינויים שמורים כאן במגש.' : st === 413 ? 'הבקשה כבדה מדי. שלח פחות תמונות בכל פעם.' : 'השליחה נכשלה (' + st + '). השינויים נשארו במגש. נסה שוב.' } });
+  }
+  editVals(R) {
+    const s = this.state, he = o => (o && (o.he ?? o.en)) || '', short = t => { t = String(t || '').replace(/\s+/g, ' '); return t.length > 70 ? t.slice(0, 70) + '…' : t; };
+    const famOf = id => FAMILIES.find(f => f.id === id);
+    const txt = (target, label, cur) => { const p = this.edFind('text', target); return { label, thumb:'', hasThumb:false, sub:p ? 'נערך: ' + short(p.he || p.en) : short(he(cur)), pend:!!p, file:false,
+      btns:[{ label:'עריכה', go:() => this.setState({ edDlg:{ target, label, he:p ? p.he : (cur && cur.he) || '', en:p ? p.en : (cur && cur.en) || '', was:{ he:(cur && cur.he) || '', en:(cur && cur.en) || '' } } }) }].concat(p ? [{ label:'ביטול', go:() => this.edDel('text', target) }] : []) }; };
+    const hide = (target, label) => { const p = this.edFind('hide', target); return { label, thumb:'', hasThumb:false, sub:p ? 'יוסתר מהאתר' : 'מוצג באתר', pend:!!p, file:false,
+      btns:[p ? { label:'ביטול הסתרה', go:() => this.edDel('hide', target) } : { label:'הסתר', go:() => this.edPut({ type:'hide', target, label }) }] }; };
+    const image = (src, label) => { const h = this.edFind('hide', 'image:' + src), r = this.edFind('image', src); return { label, thumb:r ? r.img : src, hasThumb:true, sub:h ? 'תוסתר' : r ? 'תוחלף ב: ' + r.fileName : src.split('/').pop(), pend:!!(h || r), file:!h, fileLabel:r ? 'החלפה אחרת' : 'החלף', onFile:e => { this.edImage(e.target.files[0], { type:'image', target:src, label }); e.target.value = ''; },
+      btns:(h ? [{ label:'ביטול הסתרה', go:() => this.edDel('hide', 'image:' + src) }] : [{ label:'הסתר', go:() => this.edPut({ type:'hide', target:'image:' + src, label }) }]).concat(r ? [{ label:'ביטול החלפה', go:() => this.edDel('image', src) }] : []) }; };
+    const adds = (target, label) => { const mine = this.edList().filter(e => e.type === 'add' && e.target.startsWith(target + '#'));
+      return mine.map(e => ({ label:'תמונה חדשה', thumb:e.img, hasThumb:true, sub:e.fileName, pend:true, file:false, btns:[{ label:'הסר', go:() => this.edDel('add', e.target) }] }))
+        .concat([{ label, thumb:'', hasThumb:false, sub:'קובץ תמונה (PNG/JPG/WebP). Claude יקטין וימיר אותו.', pend:false, file:true, fileLabel:'העלאת תמונה', onFile:e => { this.edImage(e.target.files[0], { type:'add', target:target + '#' + Date.now(), label }); e.target.value = ''; }, btns:[] }]); };
+    const groups = [];
+    if (R.page === 'home') groups.push({ title:'דף הבית', rows:[txt('ui:heroTitle', 'כותרת ראשית', { he:UI.he.heroTitle, en:UI.en.heroTitle }), txt('ui:heroSub', 'תת-כותרת', { he:UI.he.heroSub, en:UI.en.heroSub })] });
+    if (R.page === 'industrial') FAMILIES.forEach(f => groups.push({ title:he(f.name), rows:[hide('family:' + f.id, 'משפחה: ' + he(f.name)), txt('family:' + f.id + ':name', 'שם', f.name), txt('family:' + f.id + ':sub', 'תיאור', f.sub)]
+      .concat(f.id === 'rav-ta' || f.img ? [image(f.id === 'rav-ta' ? 'assets/tiltbin-cover-v2.webp' : f.img, 'תמונת כרטיס')] : adds('family:' + f.id + ':cover', 'תמונת כרטיס (אין כרגע)')) }));
+    if (R.page === 'family' && famOf(R.id)) {
+      const f = famOf(R.id);
+      groups.push({ title:'משפחה', rows:[hide('family:' + f.id, 'משפחה: ' + he(f.name)), txt('family:' + f.id + ':name', 'שם', f.name), txt('family:' + f.id + ':sub', 'תיאור', f.sub)] });
+      const ps = Object.values(PRODUCTS).filter(p => p.fam === f.id);
+      const rows = []; ps.forEach(p => { if (p.variants) p.variants.forEach(v => rows.push(hide('product:' + p.id + ':' + v.sku, 'גודל: ' + he(v.name)))); else rows.push(hide('product:' + p.id, 'מוצר: ' + he(p.name))); });
+      if (rows.length) groups.push({ title:'מוצרים', rows });
+    }
+    const c = this._eCtx;
+    if (R.page === 'product' && c) {
+      const { p, cur, pgal, gi, gid } = c, base = 'product:' + p.id + (cur ? ':' + cur.sku : '');
+      groups.push({ title:'מוצר', rows:[hide(base, (cur ? 'גודל: ' : 'מוצר: ') + he(cur ? cur.name : p.name)), txt(base + ':name', 'שם', cur ? cur.name : p.name),
+        txt(base + ':desc', 'תיאור', cur && cur.descHe ? { he:cur.descHe, en:(p.desc || {}).en } : p.desc), txt('product:' + p.id + ':color', 'צבע', p.color)] });
+      const gal = (pgal || (p.img ? [p.img] : [])).map((src, j) => image(src, 'תמונה ' + (j + 1) + (j === gi ? ' (מוצגת עכשיו)' : '')));
+      groups.push({ title:'תמונות', rows:gal.concat(adds('gallery:' + gid, 'הוספת תמונה לגלריה הזו')) });
+      if (cur && cur.galKeys) groups.push({ title:'כיתובים (משותפים לכל הגדלים)', rows:cur.galKeys.map(k => txt('caption:' + k, 'כיתוב "' + ({ empty:'ריק', industrial:'תעשייתי', hitech:'הייטקי' }[k] || k) + '"', GAL_CAP[k])) });
+      if ((p.features || []).length) groups.push({ title:'מאפיינים עיקריים', rows:p.features.flatMap((ft, i) => [txt('product:' + p.id + ':feature:' + i + ':title', 'כותרת ' + (i + 1), ft.title), txt('product:' + p.id + ':feature:' + i + ':body', 'טקסט ' + (i + 1), ft.body)]) });
+    }
+    const list = this.edList(), d = s.edDlg;
+    const kind = { hide:'הסתרה', text:'טקסט', image:'החלפת תמונה', add:'תמונה חדשה' };
+    return {
+      edOn:!!s.edit, edGateOn:!!s.edGate && !s.edit, edPw:s.edPw || '', edPwSet:e => this.setState({ edPw:e.target.value }), edGo:() => this.edAuth(), edGateErr:s.edGateErr || '', edHasGateErr:!!s.edGateErr, edBusy:!!s.edBusy, edBusyOp:s.edBusy ? .6 : 1,
+      edCloseGate:() => { this.setState({ edGate:false }); try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} },
+      edCount:list.length, edOffline:!!s.edOffline, edPanelOn:!!s.edPanel && !!s.edit, edTrayOn:!!s.edTray && !!s.edit,
+      edTogglePanel:() => this.setState({ edPanel:!s.edPanel, edTray:false }), edToggleTray:() => this.setState({ edTray:!s.edTray, edPanel:false, edMsg:null }),
+      edClose:() => this.setState({ edPanel:false, edTray:false }),
+      edExit:() => { this.setState({ edit:false, edPanel:false, edTray:false }); try { sessionStorage.removeItem(EDIT_KEY + '-pw'); history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} },
+      edGroups:groups, edHasGroups:groups.length > 0,
+      edItems:list.map(e => ({ kind:kind[e.type] || e.type, label:e.label || e.target, sub:e.type === 'text' ? short(e.he || e.en) : e.fileName || '', thumb:e.img || '', hasThumb:!!e.img, del:() => this.edDel(e.type, e.target) })),
+      edEmpty:!list.length, edNote:s.edNote || '', edNoteSet:e => this.setState({ edNote:e.target.value }), edSend:() => this.edSend(),
+      edHasImgs:list.some(e => e.img), edMsgOn:!!s.edMsg, edMsgText:s.edMsg ? s.edMsg.text : '', edMsgBg:s.edMsg && s.edMsg.ok ? '#E8F6EF' : '#FFF1F0', edMsgFg:s.edMsg && s.edMsg.ok ? '#0A6B4A' : '#B42318',
+      edDlgOn:!!d, edDlgLabel:d ? d.label : '', edDlgHe:d ? d.he : '', edDlgEn:d ? d.en : '',
+      edDlgSetHe:e => this.setState({ edDlg:{ ...s.edDlg, he:e.target.value } }), edDlgSetEn:e => this.setState({ edDlg:{ ...s.edDlg, en:e.target.value } }),
+      edDlgCancel:() => this.setState({ edDlg:null }),
+      edDlgSave:() => { const x = s.edDlg; if (x.he === x.was.he && x.en === x.was.en) this.edDel('text', x.target); else this.edPut({ type:'text', target:x.target, label:x.label, he:x.he, en:x.en, was:x.was }); this.setState({ edDlg:null }); }
+    };
+  }
+
   renderVals() {
+    this._eCtx = null;
     const s = this.state, cfg = this.cfg, lang = this.lang, L = UI[lang], dev = DEVICES[this.device], R = s.route;
     const pageFlag = { industrial:'industrial', family:'industrial', product:'industrial', project:'projects', medical:'medical', demo:'demo' }[R.page];
     let blocked = pageFlag && !this.vis(pageFlag);
@@ -1278,6 +1453,7 @@ class Component extends DCLogic {
       prod.opts = cmb ? p.opts.map(o => ({ label:this.tr(o.label), vals:o.vals.map(ov => { const on = cmb.sel[o.k] === ov.v; const ok = p.combos.some(c => c.sel[o.k] === ov.v && Object.keys(c.sel).every(k => k === o.k || c.sel[k] === cmb.sel[k])); return { label:this.tr(ov.label), on, bg:on ? 'var(--primary)' : 'var(--bg)', fg:on ? '#fff' : (ok ? 'var(--ink)' : 'var(--muted)'), bd:on ? 'var(--primary)' : 'var(--line)', bs:ok || on ? 'solid' : 'dashed', go:() => this.pickOpt(p, o.k, ov.v) }; }) })) : [];
       prod.hasOpts = prod.opts.length > 0;
       const gi = pgal && s.gal && s.gal.id === gid ? Math.min(s.gal.i, pgal.length - 1) : 0;
+      this._eCtx = { p, cur, pgal, gi, gid };
       prod.gal = (pgal || []).length > 1 ? pgal.map((src, i) => ({ src, on:i === gi, bd:i === gi ? 'var(--primary)' : 'var(--line)', aria:this.tr(p.name) + ' ' + (i + 1), go:() => this.setState({ gal:{ id:gid, i } }) })) : [];
       prod.hasGal = prod.gal.length > 0;
       const galMode = !!(pgal && pgal.length > 1);
@@ -1407,7 +1583,7 @@ class Component extends DCLogic {
     const isMobile = true, isTouch = this.touch;
     const mo = isTouch && !!s.menu;
     return {
-      appVer: APP_VER, showChrome: !s.site, L, dir: lang === 'he' ? 'rtl' : 'ltr', lang, frameStyle, canvasRef: this.canvasRef, importRef: this.importRef,
+      ...this.editVals(R), appVer: APP_VER, showChrome: !s.site, L, dir: lang === 'he' ? 'rtl' : 'ltr', lang, frameStyle, canvasRef: this.canvasRef, importRef: this.importRef,
       canvasPad: s.site ? '0' : '0 24px', ovPos: s.site ? 'fixed' : 'absolute', ovH: s.site ? '100vh' : Math.round((window.innerHeight - 56) / zoom) + 'px', mainOv: s.site ? 'visible' : 'auto', mainH: s.site ? 'auto' : 'calc(100vh - 56px)',
       wideBar: window.innerWidth >= 1280,
       status: dirty ? { label:'Draft · unpublished changes', short:window.innerWidth >= 1280 ? 'Draft · unpublished' : 'Draft', bg:'#FFF6E5', fg:'#7A4B00', dot:'#E59A00' } : { label:'Published', short:'Published', bg:'#E8F6EF', fg:'#0A6B4A', dot:'#12A46C' },
