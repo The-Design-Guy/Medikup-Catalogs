@@ -1,7 +1,7 @@
 {
   "id": "2026-11-23-21-54-26-d9bf",
   "created": "2026-11-23T21:54:26.656Z",
-  "status": "pending",
+  "status": "not_applied",
   "page": "https://medikup-catalogs.vercel.app/?edit#site/product/rav-ta/2020",
   "note": "",
   "changes": [
@@ -11,5 +11,7 @@
       "label": "גודל: רב תא 2",
       "page": "#site/product/rav-ta/2020"
     }
-  ]
+  ],
+  "reviewed": "2026-11-23",
+  "review_note": "בקשת בדיקה של מצב העריכה. לפי רועי: לא לבצע."
 }
