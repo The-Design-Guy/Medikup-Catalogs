@@ -525,7 +525,7 @@ button{cursor:pointer}
           <h2 style="grid-column:1 / -1;margin:32px 0 4px;font:var(--wh2) calc(var(--h2) * .8)/1.15 var(--font);letter-spacing:-.015em;color:var(--ink)">{{ g.title }}</h2>
           <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3">
             <button onClick="{{ p.go }}" style="grid-column:var(--sp3);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
-              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ p.name }}" style="aspect-ratio:4/5;width:100%;background:center / cover no-repeat url({{ p.img }}) var(--bg);box-sizing:border-box"></div></sc-if><sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:4/5;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PRODUCT PHOTO</div></sc-if>
+              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ p.name }}" style="position:relative;aspect-ratio:4/5;width:100%;background:var(--bg);box-sizing:border-box"><sc-for list="{{ p.layers }}" as="ly" hint-placeholder-count="1"><span style="position:absolute;inset:0;background:center / cover no-repeat url({{ ly.src }});opacity:{{ ly.op }};transition:opacity 600ms ease"></span></sc-for></div></sc-if><sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:4/5;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PRODUCT PHOTO</div></sc-if>
               <div style="padding:18px 20px 22px;display:flex;flex-direction:column;gap:6px">
                 <span style="font:var(--wh3) var(--h3)/1.2 var(--font);color:var(--ink)">{{ p.name }}</span>
                 <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:500 13px var(--font);color:var(--muted)">{{ p.sub }}<sc-if value="{{ p.pending }}" hint-placeholder-val="{{ false }}"><span style="font:600 11px var(--font);padding:2px 8px;border-radius:999px;background:var(--surface);color:var(--muted)">{{ L.dataPending }}</span></sc-if></span>
@@ -575,6 +575,9 @@ button{cursor:pointer}
               <span style="position:absolute;inset-inline-start:16px;bottom:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PRODUCT PHOTO PENDING</span>
             </sc-if>
           </div>
+          <sc-if value="{{ prod.hasCap }}" hint-placeholder-val="{{ false }}">
+            <p aria-live="polite" style="margin:0;min-height:1.5em;text-align:center;font:500 15px/1.5 var(--font);color:var(--ink);text-wrap:balance">{{ prod.cap }}</p>
+          </sc-if>
           <sc-if value="{{ prod.hasGal }}" hint-placeholder-val="{{ false }}">
             <div role="group" aria-label="{{ prod.title }}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px">
               <sc-for list="{{ prod.gal }}" as="gp" hint-placeholder-count="3">
@@ -1009,7 +1012,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v010';
+const APP_VER = 'v011';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
 const EDIT_KEY = 'medikup-edits-v1';
@@ -1130,7 +1133,17 @@ Object.keys(SYS_OPTS).forEach(k => { SYS_GAL[k] = SYS_OPTS[k].combos[0].gal; });
 const SYS_IMG = {}; Object.keys(SYS_GAL).forEach(k => { const g = SYS_GAL[k]; SYS_IMG[k] = g[1] || g[0]; });
 SYS.forEach(([id,en,he,rel]) => { PRODUCTS[id] = { opts:(SYS_OPTS[id] || {}).opts || null, combos:(SYS_OPTS[id] || {}).combos || null, img:SYS_IMG[id] || null, gallery:SYS_GAL[id] || null, features:SYS_FEAT[id] || [], dims:SYS_DIM[id] || null, color: id === 'smart' ? { en:'Blue', he:'כחול' } : { en:'Light grey', he:'אפור בהיר' }, id, fam:'rav-ta-systems', name:{ en, he }, pending:true, rel, basedOn: rel === 'derived' ? 'rav-ta' : null, projects: id === 'wall-rail-120' ? ['p1'] : [] }; });
 [['wall-rail-60','wall-rail',{ w:'60' }],['wall-rail-120','wall-rail',{ w:'120' }],['wall-rail-200','wall-rail',{ w:'200' }],['stand-low','stand-1',{ h:'116' }],['stand-high','stand-1',{ h:'180' }]].forEach(([o,n]) => { PRODUCTS[o] = { ...PRODUCTS[n], fam:null }; });
-[1,2,3,4].forEach(n => { PRODUCTS['picking-' + n] = { id:'picking-' + n, fam:'picking', name:{ en:'Picking Bin ' + n, he:'ארקלית ' + n }, img:'assets/picking-bin-' + n + '.webp', gallery:['assets/picking-bin-' + n + '.webp'], projects:[] }; });
+// Picking bins: colour selector (blue / grey), each with empty / industrial / hi-tech photos (medical renders kept in assets/picking for the medical catalog)
+const PICK_CAP = {
+  empty:{ he:'חזית פתוחה לשליפה מהירה', en:'Open front for quick picking' },
+  industrial:{ he:'ברגים, אומים ושייבות בהישג יד', en:'Screws, nuts and washers within easy reach' },
+  hitech:{ he:'רכיבים אלקטרוניים ממוינים לפי סוג', en:'Electronic components, sorted by type' }
+};
+const pickGal = (n, c) => ['empty', 'industrial', 'hitech'].map(k => 'assets/picking/picking-' + n + '-' + c + '-' + k + '.webp');
+[1,2,3,4].forEach(n => { PRODUCTS['picking-' + n] = { id:'picking-' + n, fam:'picking', name:{ en:'Picking Bin ' + n, he:'ארקלית ' + n }, img:pickGal(n, 'blue')[0], projects:[],
+  galKeys:['empty', 'industrial', 'hitech'], galCap:PICK_CAP, capKey:'picking',
+  opts:[{ k:'color', label:{ en:'Color', he:'צבע' }, vals:[{ v:'blue', label:{ en:'Blue', he:'כחול' } }, { v:'grey', label:{ en:'Grey', he:'אפור' } }] }],
+  combos:[{ sel:{ color:'blue' }, gal:pickGal(n, 'blue') }, { sel:{ color:'grey' }, gal:pickGal(n, 'grey') }] }; });
 // Medium-duty shelving: one product, 5 widths x 2 heights x 4 layouts (photos: assets/shelving/, see README)
 const SHELF = { w:['120','150','180','210','240'], h:['200','250'], cfg:[['single', 'Single unit', 'יחידה בודדת'], ['row2', '2 units in a row', '2 יחידות בשורה'], ['b2b', 'Back to back', 'גב אל גב'], ['corner', '90° corner', 'פינה 90°']] };
 PRODUCTS['shelf-md'] = { id:'shelf-md', fam:'shelf-md', name:{ en:'Medium-Duty Shelving', he:'מידוף לעומס בינוני' }, pending:true, projects:[], features:[],
@@ -1217,7 +1230,7 @@ class Component extends DCLogic {
     this._reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     this._famT = setInterval(() => {
       const s = this.state, r = s.route || {};
-      if (r.page !== 'family' || r.id !== 'rav-ta' || s.famTab !== 'products' || document.hidden || this._reduce) return;
+      if (r.page !== 'family' || (r.id === 'rav-ta' && s.famTab !== 'products') || document.hidden || this._reduce) return;
       this.setState({ famTick:(s.famTick || 0) + 1 });
     }, FAM_MS);
     try { const pw = sessionStorage.getItem(EDIT_KEY + '-pw'); if (pw && this.state.edGate) this.setState({ edPw:pw }, () => this.edAuth()); } catch (e) {}
@@ -1332,6 +1345,7 @@ class Component extends DCLogic {
         txt(base + ':desc', 'תיאור', cur && cur.descHe ? { he:cur.descHe, en:(p.desc || {}).en } : p.desc), txt('product:' + p.id + ':color', 'צבע', p.color)] });
       const gal = (pgal || (p.img ? [p.img] : [])).map((src, j) => image(src, 'תמונה ' + (j + 1) + (j === gi ? ' (מוצגת עכשיו)' : '')));
       groups.push({ title:'תמונות', rows:gal.concat(adds('gallery:' + gid, 'הוספת תמונה לגלריה הזו')) });
+      if (!cur && p.galKeys) groups.push({ title:'כיתובים (משותפים לכל ה' + he(famOf(p.fam).name) + ')', rows:p.galKeys.map(k => txt('caption:' + p.capKey + ':' + k, 'כיתוב "' + ({ empty:'ריק', industrial:'תעשייתי', hitech:'הייטקי' }[k] || k) + '"', p.galCap[k])) });
       if (cur && cur.galKeys) groups.push({ title:'כיתובים (משותפים לכל הגדלים)', rows:cur.galKeys.map(k => txt('caption:' + k, 'כיתוב "' + ({ empty:'ריק', industrial:'תעשייתי', hitech:'הייטקי' }[k] || k) + '"', GAL_CAP[k])) });
       if ((p.features || []).length) groups.push({ title:'מאפיינים עיקריים', rows:p.features.flatMap((ft, i) => [txt('product:' + p.id + ':feature:' + i + ':title', 'כותרת ' + (i + 1), ft.title), txt('product:' + p.id + ':feature:' + i + ':body', 'טקסט ' + (i + 1), ft.body)]) });
     }
@@ -1422,7 +1436,8 @@ class Component extends DCLogic {
       const f = famOf(R.id) || FAMILIES[0];
       fam.name = this.tr(f.name); fam.sub = this.tr(f.sub);
       const items = Object.values(PRODUCTS).filter(p => p.fam === f.id);
-      const card = p => ({ img:p.img || '', hasImg:!!p.img, noImg:!p.img, name:this.tr(p.name), sub:p.variants ? `${p.variants.length} ${L.sizes}` : '', pending:!!p.pending, go:go({ page:'product', id:p.id }) });
+      const cardGal = p => ((p.combos ? p.combos[0].gal : p.gallery) || (p.img ? [p.img] : [])).filter(x => !/medical/.test(x));
+      const card = p => ({ layers:cardGal(p).map((src, j, a) => ({ src, op:j === (s.famTick || 0) % a.length ? 1 : 0 })), img:p.img || '', hasImg:!!p.img, noImg:!p.img, name:this.tr(p.name), sub:p.variants ? `${p.variants.length} ${L.sizes}` : '', pending:!!p.pending, go:go({ page:'product', id:p.id }) });
       if (f.id === 'rav-ta') {
         const sc = 150 / 354;
         fam.hasLineup = true;
@@ -1458,7 +1473,7 @@ class Component extends DCLogic {
       const galMode = !!(pgal && pgal.length > 1);
       if (cur && cur.gal) { prod.carousel = true; prod.single = false; prod.slides = cur.gal.map((src, j) => ({ src, alt:this.tr(cur.name) + ' — ' + this.tr(GAL_CAP[cur.galKeys[j]]), ol:'none', snap:j === cur.gal.length - 1 ? 'end' : 'start', layers:[{ src, op:1 }] })); }
       else prod.slides = (prod.slides || []).map(sl => ({ ...sl, layers:[{ src:sl.src, op:1 }] }));
-      prod.cap = cur && cur.galKeys ? this.tr(cur.name) + ' – ' + this.tr(GAL_CAP[cur.galKeys[gi]]) : ''; prod.hasCap = !!prod.cap;
+      prod.cap = cur && cur.galKeys ? this.tr(cur.name) + ' – ' + this.tr(GAL_CAP[cur.galKeys[gi]]) : p.galKeys && p.galKeys[gi] ? this.tr(p.name) + ' – ' + this.tr(p.galCap[p.galKeys[gi]]) : ''; prod.hasCap = !!prod.cap;
       prod.galMode = galMode; prod.gi = gi; prod.gid = gid; prod.galN = galMode ? pgal.length : 0; prod.singleNav = galMode && !(cur && cur.gal);
       this._pc = cur && cur.gal ? { mode:'gal', gid, n:cur.gal.length, idx:gi } : { mode:'var', gid, n:vs.length, idx:Math.max(0, vs.indexOf(cur)) };
       prod.hasPhoto = !!cur; prod.noPhoto = !cur && !pgal && !p.img; prod.singleAr = vs.length ? '5/4' : '4/5';
