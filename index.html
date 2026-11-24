@@ -1012,7 +1012,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v011';
+const APP_VER = 'v012';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
 const EDIT_KEY = 'medikup-edits-v1';
@@ -1162,7 +1162,7 @@ const FAMILIES = [
   { id:'shelf-md', direct:'shelf-md', name:{ en:'Medium-Duty Shelving', he:'מדפים לעומס בינוני' }, sub:{ en:'Steel shelving for medium loads, in five widths, two heights and four layouts.', he:'מידוף פלדה לעומס בינוני, בחמישה רוחבים, שני גבהים וארבע תצורות חיבור.' }, media:'SHELVING PHOTO', img:'assets/shelving/shelf-cover.webp' },
   { id:'shutter', name:{ en:'Shutter Cabinets', he:'ארונות תריס' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'SHUTTER CABINET PHOTO' },
   { id:'wire', name:{ en:'Wire Shelving', he:'מדפי רשת' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'WIRE SHELVING PHOTO' },
-  { id:'premium', name:{ en:'Premium Shelving (La Fortezza)', he:'מדפי פרימיום (לה פורטצה)' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'PREMIUM SHELVING PHOTO' }
+  { id:'premium', name:{ en:'Premium Shelving (La Fortezza)', he:'מדפי פרימיום (לה פורטצה)' }, sub:{ en:'Product data pending.', he:'נתונים בהשלמה.' }, media:'PREMIUM SHELVING PHOTO', img:'assets/premium-cover.webp' }
 ];
 const DEF_HOTSPOTS = [ { x:.3, y:.58, pid:'rav-ta', v:'2040' }, { x:.7, y:.36, pid:'wall-rail-120' } ];
 const UI = {
@@ -1330,7 +1330,7 @@ class Component extends DCLogic {
     const groups = [];
     if (R.page === 'home') groups.push({ title:'דף הבית', rows:[txt('ui:heroTitle', 'כותרת ראשית', { he:UI.he.heroTitle, en:UI.en.heroTitle }), txt('ui:heroSub', 'תת-כותרת', { he:UI.he.heroSub, en:UI.en.heroSub })] });
     if (R.page === 'industrial') FAMILIES.forEach(f => groups.push({ title:he(f.name), rows:[hide('family:' + f.id, 'משפחה: ' + he(f.name)), txt('family:' + f.id + ':name', 'שם', f.name), txt('family:' + f.id + ':sub', 'תיאור', f.sub)]
-      .concat(f.id === 'rav-ta' || f.img ? [image(f.id === 'rav-ta' ? 'assets/tiltbin-cover-v2.webp' : f.img, 'תמונת כרטיס')] : adds('family:' + f.id + ':cover', 'תמונת כרטיס (אין כרגע)')) }));
+      .concat(f.id === 'rav-ta' || f.img ? [image(f.id === 'rav-ta' ? 'assets/tiltbin-cover-v3.webp' : f.img, 'תמונת כרטיס')] : adds('family:' + f.id + ':cover', 'תמונת כרטיס (אין כרגע)')) }));
     if (R.page === 'family' && famOf(R.id)) {
       const f = famOf(R.id);
       groups.push({ title:'משפחה', rows:[hide('family:' + f.id, 'משפחה: ' + he(f.name)), txt('family:' + f.id + ':name', 'שם', f.name), txt('family:' + f.id + ':sub', 'תיאור', f.sub)] });
@@ -1420,7 +1420,7 @@ class Component extends DCLogic {
     // families
     const famCount = f => Object.values(PRODUCTS).filter(p => p.fam === f.id).length;
     const families = FAMILIES.map(f => { const c = famCount(f); const pending = f.id !== 'rav-ta' && f.id !== 'picking';
-      return { name:this.tr(f.name), media:f.media, img:f.id === 'rav-ta' ? 'assets/tiltbin-cover-v2.webp' : (f.img || null), count: f.id === 'rav-ta' ? `6 ${L.sizes} · ${L.sku} 2020–2090` : c ? `${c} ${L.products}` : '', pending, go:go(f.direct ? { page:'product', id:f.direct } : { page:'family', id:f.id }) }; });
+      return { name:this.tr(f.name), media:f.media, img:f.id === 'rav-ta' ? 'assets/tiltbin-cover-v3.webp' : (f.img || null), count: f.id === 'rav-ta' ? `6 ${L.sizes} · ${L.sku} 2020–2090` : c ? `${c} ${L.products}` : '', pending, go:go(f.direct ? { page:'product', id:f.direct } : { page:'family', id:f.id }) }; });
     const q = s.query.trim().toLowerCase();
     const results = [];
     if (q) {
