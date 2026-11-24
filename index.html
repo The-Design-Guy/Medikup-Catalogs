@@ -389,7 +389,7 @@ button{cursor:pointer}
         <h2 style="grid-column:1 / -1;margin:0 0 8px;font:var(--wh2) var(--h2)/1.1 var(--font);letter-spacing:-.02em;color:var(--ink)">{{ L.catalogs }}</h2>
         <sc-for list="{{ homeCats }}" as="c" hint-placeholder-count="2">
           <button onClick="{{ c.go }}" disabled="{{ c.dis }}" style="grid-column:var(--sp2);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:flex;flex-direction:column;opacity:{{ c.op }}">
-            <div style="aspect-ratio:16/9;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">{{ c.media }}</div>
+            <div style="position:relative;aspect-ratio:16/9;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">{{ c.media }}<sc-if value="{{ c.img }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ c.name }}" style="position:absolute;inset:0;background:center / cover no-repeat url({{ c.img }})"></div></sc-if></div>
             <div style="padding:20px 24px 24px;display:flex;flex-direction:column;gap:6px">
               <span style="font:var(--wh3) var(--h3)/1.2 var(--font);color:var(--ink)">{{ c.name }}</span>
               <span style="font:500 14px var(--font);color:{{ c.subFg }}">{{ c.sub }}</span>
@@ -1012,7 +1012,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v013';
+const APP_VER = 'v014';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
 const EDIT_KEY = 'medikup-edits-v1';
@@ -1651,7 +1651,7 @@ class Component extends DCLogic {
       blockedNote: this.viewAs === 'admin' && !s.site ? 'Simulated: this page is switched Off in Pages & features.' : 'It may have moved, or isn’t public yet.',
       projectsOn: this.vis('projects'), hotspotsOn: this.vis('hotspots'), quoteOn: this.vis('quote'),
       homeCats: [
-        { name:L.industrialCatalog, sub:this.vis('industrial') ? L.exploreIndustrial + (lang === 'he' ? ' ←' : ' →') : L.comingSoon, subFg:this.vis('industrial') ? 'var(--primary)' : 'var(--muted)', media:'INDUSTRIAL CATALOG PHOTO', go:go({ page:'industrial' }), dis:!this.vis('industrial'), op:this.vis('industrial') ? 1 : .6 },
+        { name:L.industrialCatalog, sub:this.vis('industrial') ? L.exploreIndustrial + (lang === 'he' ? ' ←' : ' →') : L.comingSoon, subFg:this.vis('industrial') ? 'var(--primary)' : 'var(--muted)', media:'', img:'assets/industrial-cover.webp', go:go({ page:'industrial' }), dis:!this.vis('industrial'), op:this.vis('industrial') ? 1 : .6 },
         { name:L.medicalCatalog, sub:this.vis('medical') ? (lang === 'he' ? 'לקטלוג ←' : 'Open catalog →') : L.comingSoon, subFg:this.vis('medical') ? 'var(--primary)' : 'var(--muted)', media:'MEDICAL CATALOG PHOTO', go:go({ page:'medical' }), dis:!this.vis('medical'), op:this.vis('medical') ? 1 : .6 }
       ],
       query: s.query, onQuery: e => this.setState({ query:e.target.value }), hasQuery: !!q, results, noResults: !!q && !results.length,
