@@ -20,6 +20,8 @@ a:hover{color:#00AEA9}
 button,input,select,textarea{font-family:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid #00AEA9;outline-offset:2px}
+[data-zoom]{transition:transform 500ms cubic-bezier(.2,.8,.2,1);transform-origin:center}
+@media (hover:hover){[data-card]:hover [data-zoom],[data-card]:focus-visible [data-zoom]{transform:scale(1.05)}}
 @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
 </style>
 </helmet>
@@ -422,8 +424,8 @@ button{cursor:pointer}
           </div>
         </sc-if>
         <sc-for list="{{ families }}" as="f" hint-placeholder-count="5">
-          <button onClick="{{ f.go }}" style="grid-column:var(--sp3);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:block;position:relative;aspect-ratio:var(--famAR);transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
-            <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-start;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">{{ f.media }}<sc-if value="{{ f.img }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ f.name }}" style="position:absolute;inset:0;background:center / cover no-repeat url({{ f.img }})"></div></sc-if></div>
+          <button data-card="1" onClick="{{ f.go }}" style="grid-column:var(--sp3);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:block;position:relative;aspect-ratio:var(--famAR);transition:box-shadow 200ms ease;cursor:pointer" style-hover="box-shadow:0 12px 28px rgba(16,24,32,.10)">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-start;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">{{ f.media }}<sc-if value="{{ f.img }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ f.name }}" data-zoom="1" style="position:absolute;inset:0;background:center / cover no-repeat url({{ f.img }})"></div></sc-if></div>
             <div style="position:absolute;left:0;right:0;bottom:0;z-index:1;box-sizing:border-box;padding:18px 20px 22px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;background:rgba(255,255,255,.6);backdrop-filter:none">
               <span style="font:var(--wh3) var(--h3)/1.2 var(--font);color:var(--primary)">{{ f.name }}</span>
               <span style="display:flex;gap:8px;align-items:center;font:500 13px var(--font);color:var(--muted)"><sc-if value="{{ f.pending }}" hint-placeholder-val="{{ false }}"><span style="font:600 11px var(--font);padding:2px 8px;border-radius:999px;background:var(--surface);color:var(--muted)">{{ L.dataPending }}</span></sc-if></span>
@@ -524,8 +526,8 @@ button{cursor:pointer}
         <sc-for list="{{ fam.groups }}" as="g" hint-placeholder-count="1">
           <h2 style="grid-column:1 / -1;margin:32px 0 4px;font:var(--wh2) calc(var(--h2) * .8)/1.15 var(--font);letter-spacing:-.015em;color:var(--ink)">{{ g.title }}</h2>
           <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3">
-            <button onClick="{{ p.go }}" style="grid-column:var(--sp3);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
-              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ p.name }}" style="position:relative;aspect-ratio:4/5;width:100%;background:var(--bg);box-sizing:border-box"><sc-for list="{{ p.layers }}" as="ly" hint-placeholder-count="1"><span style="position:absolute;inset:0;background:center / cover no-repeat url({{ ly.src }});opacity:{{ ly.op }};transition:opacity 600ms ease"></span></sc-for></div></sc-if><sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:4/5;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PRODUCT PHOTO</div></sc-if>
+            <button data-card="1" onClick="{{ p.go }}" style="grid-column:var(--sp3);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);box-shadow:var(--sh);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow 200ms ease;cursor:pointer" style-hover="box-shadow:0 12px 28px rgba(16,24,32,.10)">
+              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ p.name }}" style="position:relative;aspect-ratio:4/5;width:100%;background:var(--bg);box-sizing:border-box;overflow:hidden"><sc-for list="{{ p.layers }}" as="ly" hint-placeholder-count="1"><span data-zoom="1" style="position:absolute;inset:0;background:center / cover no-repeat url({{ ly.src }});opacity:{{ ly.op }};transition:opacity 600ms ease"></span></sc-for></div></sc-if><sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:4/5;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PRODUCT PHOTO</div></sc-if>
               <div style="padding:18px 20px 22px;display:flex;flex-direction:column;gap:6px">
                 <span style="font:var(--wh3) var(--h3)/1.2 var(--font);color:var(--ink)">{{ p.name }}</span>
                 <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:500 13px var(--font);color:var(--muted)">{{ p.sub }}<sc-if value="{{ p.pending }}" hint-placeholder-val="{{ false }}"><span style="font:600 11px var(--font);padding:2px 8px;border-radius:999px;background:var(--surface);color:var(--muted)">{{ L.dataPending }}</span></sc-if></span>
@@ -761,8 +763,8 @@ button{cursor:pointer}
             <p style="margin:0;font:500 13px var(--font);color:#7A4B00">{{ g.note }}</p>
           </div>
           <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="4">
-            <button onClick="{{ p.go }}" style="grid-column:var(--sp4);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
-              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div role="img" aria-label="{{ p.name }}" style="aspect-ratio:4/5;width:100%;box-sizing:border-box;background:center / cover no-repeat url({{ p.img }}) var(--bg)"></div></sc-if><sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:4/5;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 10px,color-mix(in srgb,var(--surface),var(--ink) 5%) 10px 20px)"></div></sc-if>
+            <button data-card="1" onClick="{{ p.go }}" style="grid-column:var(--sp4);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow 200ms ease;cursor:pointer" style-hover="box-shadow:0 12px 28px rgba(16,24,32,.10)">
+              <sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div style="aspect-ratio:4/5;width:100%;overflow:hidden"><div role="img" aria-label="{{ p.name }}" data-zoom="1" style="width:100%;height:100%;box-sizing:border-box;background:center / cover no-repeat url({{ p.img }}) var(--bg)"></div></div></sc-if><sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}"><div style="aspect-ratio:4/5;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 10px,color-mix(in srgb,var(--surface),var(--ink) 5%) 10px 20px)"></div></sc-if>
               <div style="padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px">
                 <sc-if value="{{ p.hasRel }}" hint-placeholder-val="{{ true }}"><span style="font:600 11px var(--font);letter-spacing:.05em;text-transform:uppercase;color:var(--accentInk)">{{ p.rel }}</span></sc-if>
                 <span style="font:var(--wh3) 15px/1.3 var(--font);color:var(--ink)">{{ p.name }}</span>
@@ -776,8 +778,8 @@ button{cursor:pointer}
         <section style="max-width:var(--maxw);margin:0 auto;padding:var(--sec) var(--m) 0;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));column-gap:var(--g);row-gap:16px">
           <h2 style="grid-column:1 / -1;margin:0;font:var(--wh2) calc(var(--h2) * .8)/1.15 var(--font);letter-spacing:-.015em;color:var(--ink)">{{ L.featuredProjects }}</h2>
           <sc-for list="{{ prod.projects }}" as="p" hint-placeholder-count="1">
-            <button onClick="{{ p.go }}" style="grid-column:var(--sp2);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:transform 200ms ease, box-shadow 200ms ease;cursor:pointer" style-hover="transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,24,32,.10)">
-              <div style="aspect-ratio:16/9;width:100%;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PROJECT PHOTO</div>
+            <button data-card="1" onClick="{{ p.go }}" style="grid-column:var(--sp2);text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:var(--r);padding:0;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow 200ms ease;cursor:pointer" style-hover="box-shadow:0 12px 28px rgba(16,24,32,.10)">
+              <div style="aspect-ratio:16/9;width:100%;overflow:hidden"><div data-zoom="1" style="width:100%;height:100%;box-sizing:border-box;background:repeating-linear-gradient(135deg,var(--surface) 0 12px,color-mix(in srgb,var(--surface),var(--ink) 5%) 12px 24px);display:flex;align-items:flex-end;padding:14px;font:500 11px var(--font);letter-spacing:.08em;color:var(--muted)">PROJECT PHOTO</div></div>
               <div style="padding:16px 20px 20px;font:var(--wh3) 17px var(--font);color:var(--ink)">{{ p.title }}</div>
             </button>
           </sc-for>
@@ -1012,7 +1014,7 @@ button{cursor:pointer}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-const APP_VER = 'v014';
+const APP_VER = 'v015';
 const FAM_MS = 1500; // family-page card auto-advance interval (product pages are manual)
 const KEY = 'medikup-proto-v1';
 const EDIT_KEY = 'medikup-edits-v1';
